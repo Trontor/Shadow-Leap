@@ -1,3 +1,3 @@
 public interface TimeSupport {
-	public void OnTimeTick(int delta);
+	public void onTimeTick(int delta);
 }

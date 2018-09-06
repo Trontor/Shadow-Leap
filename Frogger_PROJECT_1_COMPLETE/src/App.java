@@ -14,17 +14,13 @@ public class App extends BasicGame {
 	
     public static final int SCREEN_WIDTH = 1024;
     public static final int SCREEN_HEIGHT = 768;
-    private static boolean keep_running = true;
-    private World world;
+    private static boolean keepRunning = true;
+    private static World world;
 
     public App() {
         super("Shadow Leap");
     }
-    
 
-    public static void CloseGame() { 
-    	keep_running = false;
-    }
     @Override
     public void init(GameContainer gc)
             throws SlickException {
@@ -43,8 +39,7 @@ public class App extends BasicGame {
     @Override
     public void update(GameContainer gc, int delta)
             throws SlickException {
-        // Get data about the current input (keyboard state).
-    	if (!keep_running) {
+    	if (!keepRunning) {
     		gc.exit();
     	}
         Input input = gc.getInput();
@@ -63,12 +58,21 @@ public class App extends BasicGame {
     /** Start-up method. Creates the game and runs it.
      * @param args Command-line arguments (ignored).
      */
-    public static void main(String[] args)
+    public static void main(String[] args) 
             throws SlickException {
         AppGameContainer app = new AppGameContainer(new App());
         app.setShowFPS(false);
         app.setDisplayMode(SCREEN_WIDTH, SCREEN_HEIGHT, false);
         app.start();
+    }
+
+    public static void CloseGame() { 
+    	keepRunning = false;
+    }
+    
+    /* to do enable world switching */
+    public static void setWorld(World newWorld) {
+    	world = newWorld;
     }
 
 }

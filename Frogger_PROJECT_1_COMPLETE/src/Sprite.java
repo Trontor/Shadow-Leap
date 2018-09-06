@@ -7,7 +7,6 @@ import utilities.BoundingBox;
 
 public class Sprite { 
 	private BoundingBox hitBox = null;
-
 	private Image image;
 	private String spriteName;
 	private World world;
@@ -17,7 +16,7 @@ public class Sprite {
 
 	private float x, y, height, width;
 
-	public BoundingBox getHitBox() {
+	protected BoundingBox getHitBox() {
 		return hitBox;
 	} 
 	
@@ -59,36 +58,27 @@ public class Sprite {
 	public float getXPos() {
 		return x + width/2;
 	}
+	
 	public float getYPos() {
 		return y + height/2;
 	}
 	
-	public void setLocation(float center_x, float center_y) { 
-		x = center_x - width/2; 
-		y = center_y - height/2;
+	protected void setLocation(float centerX, float centerY) { 
+		x = centerX - width/2; 
+		y = centerY - height/2;
 		if (hitBox == null) {
 			hitBox = new BoundingBox(image, x, y);
 		} else {
 			hitBox.setX(x);
 			hitBox.setY(y);
 		}
-		for (Sprite s : world.getAllSprites()) {
-			if (!s.hitBox.intersects(this.hitBox))
-				continue;
-			if (this instanceof CollisionDetection) {
-				((CollisionDetection)this).onCollision(s);
-			}
-			if (s instanceof CollisionDetection) {
-				((CollisionDetection)s).onCollision(this);
-			}
-		} 
 	}  
 	
-	public Sprite(World spawn_world, String Name, String imageSrc, float center_x, float center_y) throws SlickException { 
+	public Sprite(World spawn_world, String Name, String imageSrc, float centerX, float centerY) throws SlickException { 
 		this.world = spawn_world;
 		spriteName = Name;
 		setImageSource(imageSrc);
-		setLocation(center_x, center_y);
+		setLocation(centerX, centerY);
 	}
 	
 	public void update(Input input, int delta) {

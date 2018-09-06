@@ -1,5 +1,3 @@
-public abstract interface CollisionDetection {
-	public default void onCollision(Sprite sprite) {
-				
-	}
+public interface CollisionDetection extends TimeSupport {	
+	public void onCollision(Sprite sprite);
 }

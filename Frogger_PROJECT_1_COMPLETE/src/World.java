@@ -7,7 +7,8 @@ import org.newdawn.slick.SlickException;
 
 public class World {
 	private List<Sprite> spriteMap;
-	final int TILE_SIZE = 48;
+	private final int TILE_SIZE = 48;
+	
 	public World() {
 		spriteMap = new ArrayList<Sprite>();
 		try {
@@ -21,32 +22,32 @@ public class World {
 	
 	private void AddObstacles() throws SlickException {
 		/* add buses */
-		List<PatternInfo> bus_patterns = new ArrayList<PatternInfo>();
-		bus_patterns.add(new PatternInfo(432, (float) 6.5, 48));
-		bus_patterns.add(new PatternInfo(480, (float) 5, 0));
-		bus_patterns.add(new PatternInfo(528, (float) 12, 64));
-		bus_patterns.add(new PatternInfo(576, (float) 5, 128));
-		bus_patterns.add(new PatternInfo(624, (float) 6.5, 250));
+		List<PatternInfo> busPatterns = new ArrayList<PatternInfo>();
+		busPatterns.add(new PatternInfo(432, 6.5f, 48));
+		busPatterns.add(new PatternInfo(480, 5, 0));
+		busPatterns.add(new PatternInfo(528, 12, 64));
+		busPatterns.add(new PatternInfo(576, 5, 128));
+		busPatterns.add(new PatternInfo(624, 6.5f, 250));
 		boolean right = false;
-		for(PatternInfo info : bus_patterns) {
-			Velocity bus_velocity = new Velocity((right? -1: 1)*(float)0.15, 0);
-			for (float x = info.getOffset(); x < App.SCREEN_WIDTH ; x += TILE_SIZE *(info.getSeparation() + 1)) {
-				Sprite new_bus = new Obstacle(this, "Bus", "assets/bus.png", x, info.getYlocation(), bus_velocity);
-				spriteMap.add(new_bus);
+		for(PatternInfo info : busPatterns) {
+			Velocity busVelocity = new Velocity((right? -1: 1)*0.15f, 0);
+			float xDelta = TILE_SIZE *(info.getSeparation() + 1);
+			for (float x = info.getOffset(); x < App.SCREEN_WIDTH; x += xDelta) {
+				Sprite newBus = new Obstacle(this, "Bus", "assets/bus.png", x, info.getYlocation(), busVelocity);
+				spriteMap.add(newBus);
 			}
 			right = !right;
 		}
 	}
 	
 	private void AddPlayers() throws SlickException {
-		/* add player */
 		Player player = new Player(this, "assets/frog.png", 512, 720);
 		spriteMap.add(player);
 	} 
 	
 	private void AddMap() throws SlickException {
 		spriteMap = new ArrayList<Sprite>(); 
-		/* hardcode map */
+		/* hardcoded map */
 		List<Integer> grassYs = Arrays.asList(672, 384);
 		List<Integer> waterYs = new ArrayList<Integer>();
 		/* water filled in range y = 48 -> 336 */
@@ -59,7 +60,7 @@ public class World {
 			for (int x = 0; x <= App.SCREEN_WIDTH; x += TILE_SIZE) {
 				Sprite newSprite = new Sprite(this, "Grass", "assets/grass.png", x, y);	
 				if (newSprite != null)
-					spriteMap.add(newSprite);	
+					spriteMap.add(newSprite);
 			}
 		}
 		for (int y: waterYs) {
@@ -71,7 +72,7 @@ public class World {
 		} 
 	}
 	
-	public List<Sprite> getAllSprites(){
+	public List<Sprite> getSpriteMap(){
 		return spriteMap;
 	}
 	
@@ -88,27 +89,26 @@ public class World {
 	}
 	
 	public void update(Input input, int delta) {
-		for (Sprite s : getAllSprites()) {
+		for (Sprite s : getSpriteMap()) {
 			s.update(input, delta);
 			if (s instanceof TimeSupport) {
-				((TimeSupport) s).OnTimeTick(delta);
+				((TimeSupport) s).onTimeTick(delta);
 			}
 		}	
 	}
 	
 	public void onKeyPressed(int key, char c) {
-		for (Sprite s: getAllSprites()) {
+		for (Sprite s: getSpriteMap()) {
 			if (s instanceof KeySupport) {
 				((KeySupport)s).onKeyPress(key, c);
 			}
 		}
 	}
 	
-	public void render(Graphics g) {
-		// Draw all of the sprites in the game 
-		for (Sprite s: getAllSprites()) {
+	public void render(Graphics g) { 
+		/* renders every sprite in the sprite map */
+		for (Sprite s: getSpriteMap()) {
 			s.render(g);
 		}
-		
 	}
 }

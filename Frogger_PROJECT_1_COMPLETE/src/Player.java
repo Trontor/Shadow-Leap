@@ -1,56 +1,57 @@
-import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException; 
 
 public class Player extends Sprite implements KeySupport, CollisionDetection {
-
-	/* Default tile size */
-	private float TILE_SIZE = 48;
-	public Player(World spawn_world, String imageSrc, float x, float y) throws SlickException {
-		super(spawn_world, "Player", imageSrc, x, y);
-		Image tile = new Image(imageSrc);
-		TILE_SIZE = tile.getWidth(); 
+	
+	public Player(World spawnWorld, String imageSrc, float x, float y) throws SlickException {
+		super(spawnWorld, "Player", imageSrc, x, y);
 	}   
 	 
 	@Override
-	public void setLocation(float center_x, float center_y) { 
-		float offset = TILE_SIZE/2;
-		float right_x = center_x + offset;
-		float left_x = center_x - offset;
-		float top_y = center_y + offset;
-		float bottom_y = center_y - offset; 
-		float max_x = App.SCREEN_WIDTH;
-		float max_y = App.SCREEN_HEIGHT;
-		if (right_x > max_x || left_x < 0)
+	public void setLocation(float centerX, float centerY) { 
+		float offset = super.getWidth()/2;
+		float rightX = centerX + offset;
+		float leftX = centerX - offset;
+		float topY = centerY + offset;
+		float bottomY = centerY - offset; 
+		float maxX = App.SCREEN_WIDTH;
+		float maxY = App.SCREEN_HEIGHT;
+		if (rightX > maxX || leftX < 0)
 			return;
-		if (top_y > max_y || bottom_y < 0)
+		if (topY > maxY || bottomY < 0)
 			return;
-		super.setLocation(center_x, center_y);
+		super.setLocation(centerX, centerY);
 	} 
 
-	
-	@Override
-	public void update(Input input, int delta) {  
-		super.update(input, delta);
-	}
-
-	@Override
 	public void onKeyPress(int key, char c) {
 		float newX = getXPos(), newY = getYPos();
+		float delta = super.getWidth();
 		switch(key) {
 			case Input.KEY_DOWN:
-				newY += TILE_SIZE;
+				newY += delta;
 				break;
 			case Input.KEY_UP:
-				newY -= TILE_SIZE;
+				newY -= delta;
 				break;
 			case Input.KEY_LEFT:
-				newX -= TILE_SIZE;
+				newX -= delta;
 				break;
 			case Input.KEY_RIGHT:
-				newX += TILE_SIZE;
+				newX += delta;
 				break;
 		}
 		setLocation(newX, newY);
-	}	
+	}
+
+	public void onCollision(Sprite sprite) {
+		getWorld().ChangeGameState(WorldState.Death);
+	}
+
+	public void onTimeTick(int delta) {
+		for (Sprite sprite : getWorld().getSpriteMap()) {
+			if (sprite instanceof Collidable && getHitBox().intersects(sprite.getHitBox())) {
+				onCollision(sprite);
+			}
+		}
+	}
 }

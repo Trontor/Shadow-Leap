@@ -1,26 +1,17 @@
-
-
 public class Velocity {
-	private float horizontal;
+
+	private float horizontal, vertical;
+	
 	public float getHorizontal() {
 		return horizontal;
 	}
-	public float vertical;
+	
 	public float getVertical() {
 		return vertical;
 	}
 	
-	public float getVerticalSign() {
-		return (int) Math.signum(vertical);
-	}
-
-	public float getHorizontalSign() {
-		return (int) Math.signum(horizontal);
-	}
-	
 	public float getMagnitude() {
-		return (float)Math.sqrt(Math.pow(horizontal, 2) + Math.pow(vertical,2));
-		
+		return (float)Math.sqrt(Math.pow(horizontal, 2) + Math.pow(vertical,2));	
 	}
 	
 	public Velocity getOppositeUnitVector() {
@@ -29,8 +20,8 @@ public class Velocity {
 		return velocity;
 	}
 	
-	public Velocity(float x_velocity, float y_velocity) {
-		horizontal = x_velocity;
+	public Velocity(float xVelocity, float y_velocity) {
+		horizontal = xVelocity;
 		vertical = y_velocity;
 	}
 }

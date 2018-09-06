@@ -1,13 +1,13 @@
 
 public class PatternInfo {
-	private int y_location;
+	private int yLocation;
 	private float separation; 
 	private float offset;
 	public int getYlocation() {
-		return y_location;
+		return yLocation;
 	}
-	public void setYlocation(int y_location) {
-		this.y_location = y_location;
+	public void setYlocation(int yLocation) {
+		this.yLocation = yLocation;
 	}
 	public float getSeparation() {
 		return separation;
@@ -21,8 +21,8 @@ public class PatternInfo {
 	public void setOffset(float offset) {
 		this.offset = offset;
 	}
-	public PatternInfo(int y_location, float separation, float offset) {
-		this.y_location = y_location;
+	public PatternInfo(int yLocation, float separation, float offset) {
+		this.yLocation = yLocation;
 		this.separation = separation;
 		this.offset = offset;
 	}	
