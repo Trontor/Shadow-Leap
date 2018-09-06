@@ -1,3 +1,6 @@
+import java.util.List; 
+import java.util.stream.Collectors;
+
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 
@@ -9,6 +12,9 @@ public class Player extends Sprite implements KeySupport, CollisionDetection {
 		super(spawnWorld, "Player", imageSrc, centerPos);
 	}   
 	 
+	/* Ensures that the player stays within the screen bounds 
+	 * @see Sprite#setLocation(utilities.Position)
+	 */
 	@Override
 	public void setLocation(Position center) { 
 		float offset = super.getWidth()/2;
@@ -23,8 +29,13 @@ public class Player extends Sprite implements KeySupport, CollisionDetection {
 		super.setLocation(center);
 	} 
 
+	/* Handles movement for player
+	 * @see KeySupport#onKeyPress(int, char)
+	 */
 	public void onKeyPress(int key, char c) {
-		float newX = centerPosition.getX(), newY = centerPosition.getY();
+		/* determine key press and set appropriate position offset */
+		float newX = centerPosition.getX();
+		float newY = centerPosition.getY();
 		float delta = super.getWidth();
 		switch(key) {
 			case Input.KEY_DOWN:
@@ -43,13 +54,23 @@ public class Player extends Sprite implements KeySupport, CollisionDetection {
 		setLocation(new Position(newX, newY));
 	}
 
+	/* (non-Javadoc)
+	 * @see CollisionDetection#onCollision(Sprite)
+	 */
 	public void onCollision(Sprite sprite) {
+		/* signals player has died */
 		getWorld().ChangeGameState(WorldState.Death);
 	}
-
+	
+	/* Determines if the player has collided with an object
+	 * @see TimeSupport#onTimeTick(int)
+	 */
 	public void onTimeTick(int delta) {
-		for (Sprite sprite : getWorld().getSpriteMap()) {
-			if (sprite instanceof Collidable && getHitBox().intersects(sprite.getHitBox())) {
+		List<Sprite> collidableObjects = getWorld().getSpriteMap().stream()
+																  .filter(s->s instanceof Collidable)
+																  .collect(Collectors.toList()); 
+		for (Sprite sprite : collidableObjects) {
+			if (getHitBox().intersects(sprite.getHitBox())) {
 				onCollision(sprite);
 			}
 		}

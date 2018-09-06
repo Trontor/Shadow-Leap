@@ -23,7 +23,6 @@ public class World {
 	}
 	
 	private void AddObstacles() throws SlickException {
-		/* add buses */
 		List<PatternInfo> busPatterns = new ArrayList<PatternInfo>();
 		busPatterns.add(new PatternInfo(432, 6.5f, 48));
 		busPatterns.add(new PatternInfo(480, 5, 0));
@@ -108,8 +107,7 @@ public class World {
 			((KeySupport)s).onKeyPress(key, c);
 		}
 	}	
-	public void render(Graphics g) { 
-		/* renders every sprite in the sprite map */
+	public void render(Graphics g) {
 		for (Sprite s: getSpriteMap()) {
 			s.render(g);
 		}

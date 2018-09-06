@@ -5,23 +5,35 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Input;
 
+/** 
+ * @author Rohyl Joshi
+ * Designed for Project 1 of Object Oriented Software Development, Semester 2 - 2018
+ */
 public class App extends BasicGame {
-	
     public static final int SCREEN_WIDTH = 1024;
     public static final int SCREEN_HEIGHT = 768;
     private static boolean keepRunning = true;
     private static World world;
-
+    
+    /**
+     * Initializes the App class
+     */
     public App() {
         super("Shadow Leap");
     }
-
+    
+    /* (non-Javadoc)
+     * @see org.newdawn.slick.BasicGame#init(org.newdawn.slick.GameContainer)
+     */
     @Override
     public void init(GameContainer gc)
             throws SlickException {
         world = new World();
     }
 
+    /* (non-Javadoc)
+     * @see org.newdawn.slick.BasicGame#keyPressed(int, char)
+     */
     @Override
     public void keyPressed(int key, char c) {
     	world.onKeyPressed(key, c);
@@ -61,11 +73,16 @@ public class App extends BasicGame {
         app.start();
     }
 
+    /**
+     * Signals to close the game on next update
+     */
     public static void CloseGame() { 
     	keepRunning = false;
     }
-    
-    /* to do enable world switching */
+ 
+    /** [Future] Enables world switching functionality
+     * @param newWorld World to switch to
+     */
     public static void setWorld(World newWorld) {
     	world = newWorld;
     }
