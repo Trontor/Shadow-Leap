@@ -1,3 +1,4 @@
+import org.lwjgl.Sys;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
@@ -10,10 +11,10 @@ public class Sprite {
 	private Image image;
 	private String spriteName;
 	private World world;
+	public Position getClosestWall;
 	public Position centerPosition;
 	
 	public World getWorld() {
-
 		return world;
 	} 
 
@@ -48,20 +49,26 @@ public class Sprite {
 	public void setImageSource(String value) throws SlickException {
 		image = new Image(value);
 		height = image.getHeight();
-		width = image.getWidth(); 
-		//System.out.format("| Image Source =  %s, Dimensions = %.0fx%.0f| ", value, width, height);
+		width = image.getWidth();  
 	}
+	
+	public boolean outOfBounds() { 
+		boolean tooHigh = hitBox.getBottom() > App.SCREEN_HEIGHT;
+		boolean tooLow = hitBox.getTop() <  0;
+		boolean tooFarLeft = hitBox.getRight() < 0;
+		boolean tooFarRight = hitBox.getLeft() > App.SCREEN_WIDTH; 
+		return tooHigh || tooLow || tooFarLeft || tooFarRight;
+	}	
 	
 	protected void setLocation(Position centerLoc) { 
 		centerPosition = centerLoc;
-		float x = centerLoc.getX() - width/2; 
-		float y = centerLoc.getY() - height/2;
-		
 		if (hitBox == null) {
-			hitBox = new BoundingBox(image, x, y);
-		} else {
-			hitBox.setX(x);
-			hitBox.setY(y);
+			hitBox = new BoundingBox(image, centerPosition);
+		} 
+		hitBox.setX(centerLoc.getX());
+		hitBox.setY(centerLoc.getY());
+		if (outOfBounds()) {
+			System.out.format("[OutOfBounds] %s at %s\n", spriteName, centerLoc);
 		}
 	}  
 	

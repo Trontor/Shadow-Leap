@@ -18,4 +18,19 @@ public class Position {
 		this.x = x;
 		this.y = y;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Position))
+			return false;
+		Position p = ((Position)obj);
+		return p.getX() == x && p.getY() == y;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("(%.2f, %.2f)", x, y);
+	}
+	
+	
 }

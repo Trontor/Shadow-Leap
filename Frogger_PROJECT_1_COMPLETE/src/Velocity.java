@@ -10,6 +10,14 @@ public class Velocity {
 		return vertical;
 	}
 	
+	public float getXSign() {
+		return Math.signum(horizontal);
+	}
+	
+	public float getYSign() {
+		return Math.signum(vertical);
+	}
+	
 	public float getMagnitude() {
 		return (float)Math.sqrt(Math.pow(horizontal, 2) + Math.pow(vertical,2));	
 	}
@@ -20,8 +28,16 @@ public class Velocity {
 		return velocity;
 	}
 	
-	public Velocity(float xVelocity, float y_velocity) {
+	public Velocity(float xVelocity, float yVelocity) {
 		horizontal = xVelocity;
-		vertical = y_velocity;
+		vertical = yVelocity;
 	}
+
+	@Override
+	public String toString() {
+		return String.format("(x => %.2f px/ms, y => %.2f px/ms)", horizontal, vertical);
+		
+	}
+	
+	
 }

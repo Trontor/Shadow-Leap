@@ -13,14 +13,12 @@ public class Player extends Sprite implements KeySupport, CollisionDetection {
 	public void setLocation(Position center) { 
 		float offset = super.getWidth()/2;
 		float rightX = center.getX() + offset;
-		float leftX = center.getY() - offset;
+		float leftX = center.getX() - offset;
 		float topY = center.getY() + offset;
 		float bottomY = center.getY() - offset; 
 		float maxX = App.SCREEN_WIDTH;
 		float maxY = App.SCREEN_HEIGHT;
-		if (rightX > maxX || leftX < 0)
-			return;
-		if (topY > maxY || bottomY < 0)
+		if (rightX > maxX || leftX < 0 || topY > maxY || bottomY < 0)
 			return;
 		super.setLocation(center);
 	} 

@@ -1,6 +1,7 @@
 /**
  * BoundingBox complete class for SWEN20003: Object Oriented Software Development 2018
  * by Eleanor McMurtry, University of Melbourne
+ * modified by Rohyl Joshi, ^
  */
 package utilities;
 import org.newdawn.slick.Image;
@@ -19,22 +20,19 @@ public class BoundingBox {
 		setX(centerPos.getX());
 		setY(centerPos.getX());
 	}
-	public BoundingBox(Image img, float x, float y) {
+	public BoundingBox(Image img, Position centerPos) {
 		setWidth(img.getWidth());
 		setHeight(img.getHeight());
-		setX(x);
-		setY(y);
+		setX(centerPos.getX());
+		setY(centerPos.getY());
 	}
 	public BoundingBox(BoundingBox bb) {
 		width = bb.width;
 		height = bb.height;
 		left = bb.left;
 		top = bb.top;
-	}
-
-	/*
-	 * Sets the x and y position at the centre of the bounding box.
-	 */
+	} 
+	
 	public void setX(float x) {
 		left = x - width / 2;
 	}
