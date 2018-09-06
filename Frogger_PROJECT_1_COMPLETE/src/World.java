@@ -1,9 +1,11 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import utilities.Position;
 
 public class World {
 	private List<Sprite> spriteMap;
@@ -33,7 +35,8 @@ public class World {
 			Velocity busVelocity = new Velocity((right? -1: 1)*0.15f, 0);
 			float xDelta = TILE_SIZE *(info.getSeparation() + 1);
 			for (float x = info.getOffset(); x < App.SCREEN_WIDTH; x += xDelta) {
-				Sprite newBus = new Obstacle(this, "Bus", "assets/bus.png", x, info.getYlocation(), busVelocity);
+				Position spawnLocation = new Position(x, info.getYlocation());
+				Sprite newBus = new Obstacle(this, "Bus", "assets/bus.png", spawnLocation, busVelocity);
 				spriteMap.add(newBus);
 			}
 			right = !right;
@@ -41,7 +44,7 @@ public class World {
 	}
 	
 	private void AddPlayers() throws SlickException {
-		Player player = new Player(this, "assets/frog.png", 512, 720);
+		Player player = new Player(this, "assets/frog.png", new Position(512, 720));
 		spriteMap.add(player);
 	} 
 	
@@ -58,14 +61,14 @@ public class World {
 		}
 		for (int y: grassYs) {
 			for (int x = 0; x <= App.SCREEN_WIDTH; x += TILE_SIZE) {
-				Sprite newSprite = new Sprite(this, "Grass", "assets/grass.png", x, y);	
+				Sprite newSprite = new Sprite(this, "Grass", "assets/grass.png", new Position(x, y));	
 				if (newSprite != null)
 					spriteMap.add(newSprite);
 			}
 		}
 		for (int y: waterYs) {
 			for (int x = 0; x <= App.SCREEN_WIDTH; x += TILE_SIZE) {
-				Sprite newSprite = new Obstacle(this, "Water", "assets/water.png", x, y, null);	
+				Sprite newSprite = new Obstacle(this, "Water", "assets/water.png", new Position(x, y), null);	
 				if (newSprite != null)
 					spriteMap.add(newSprite);	
 			}
@@ -89,22 +92,22 @@ public class World {
 	}
 	
 	public void update(Input input, int delta) {
-		for (Sprite s : getSpriteMap()) {
-			s.update(input, delta);
-			if (s instanceof TimeSupport) {
-				((TimeSupport) s).onTimeTick(delta);
-			}
+		List<Sprite> timeSupportSprites = getSpriteMap().stream()
+													    .filter(s-> s instanceof TimeSupport)
+													    .collect(Collectors.toList());
+		for (Sprite s : timeSupportSprites) {
+			((TimeSupport)s).onTimeTick(delta);
 		}	
 	}
 	
 	public void onKeyPressed(int key, char c) {
-		for (Sprite s: getSpriteMap()) {
-			if (s instanceof KeySupport) {
-				((KeySupport)s).onKeyPress(key, c);
-			}
+		List<Sprite> keySupportSprites = getSpriteMap().stream()
+													   .filter(s-> s instanceof KeySupport)
+													   .collect(Collectors.toList());
+		for (Sprite s: keySupportSprites) {
+			((KeySupport)s).onKeyPress(key, c);
 		}
-	}
-	
+	}	
 	public void render(Graphics g) { 
 		/* renders every sprite in the sprite map */
 		for (Sprite s: getSpriteMap()) {

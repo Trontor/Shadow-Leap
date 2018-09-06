@@ -3,7 +3,6 @@
  * by Eleanor McMurtry, University of Melbourne
  */
 package utilities;
-
 import org.newdawn.slick.Image;
 
 public class BoundingBox {
@@ -14,11 +13,11 @@ public class BoundingBox {
 	private float width;
 	private float height;
 	
-	public BoundingBox(float x, float y, float width, float height) {
+	public BoundingBox(Position centerPos, float width, float height) {
 		setWidth(width);
 		setHeight(height);
-		setX(x);
-		setY(y);
+		setX(centerPos.getX());
+		setY(centerPos.getX());
 	}
 	public BoundingBox(Image img, float x, float y) {
 		setWidth(img.getWidth());

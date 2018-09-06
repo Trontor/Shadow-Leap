@@ -1,34 +1,33 @@
 import org.newdawn.slick.SlickException;
 
+import utilities.BoundingBox;
+import utilities.Position;
+
 public class Obstacle extends Sprite implements TimeSupport, Collidable {
  
 	private Velocity movementVelocity; 
 	
-	public Obstacle(World world, String Name, String imageSrc, float x, float y, Velocity speedInfo) throws SlickException {
-		super(world, Name, imageSrc, x, y);
+	public Obstacle(World world, String Name, String imageSrc, Position centerPos, Velocity speedInfo) throws SlickException {
+		super(world, Name, imageSrc, centerPos);
 		if (speedInfo == null) {
 			speedInfo = new Velocity(0,0);
 		}
 		movementVelocity = speedInfo;
 	}
 
-	@Override
-	public void setLocation(float x, float y) {
-		super.setLocation(x, y);
-	} 
-
 	public void respawn() {   
 		Velocity otherDirection = movementVelocity.getOppositeUnitVector(); 
-		float newX = getXPos() + otherDirection.getHorizontal() * (App.SCREEN_WIDTH + super.getWidth());
-		float newY = getYPos() + otherDirection.getVertical() * (App.SCREEN_HEIGHT + super.getHeight()); 
-		setLocation(newX, newY);
+		float newX = centerPosition.getX() + otherDirection.getHorizontal() * (App.SCREEN_WIDTH + super.getWidth());
+		float newY = centerPosition.getY() + otherDirection.getVertical() * (App.SCREEN_HEIGHT + super.getHeight()); 
+		setLocation(new Position(newX, newY));
 	}
 	
 	private boolean outOfBounds() {
-		boolean tooHigh = getBottom() > App.SCREEN_HEIGHT;
-		boolean tooLow = getTop() < 0;
-		boolean tooFarLeft = getRight() < 0;
-		boolean tooFarRight = getLeft() > App.SCREEN_WIDTH;
+		BoundingBox box = getHitBox();
+		boolean tooHigh = box.getBottom() > App.SCREEN_HEIGHT;
+		boolean tooLow = box.getTop() <  0;
+		boolean tooFarLeft = box.getRight() < 0;
+		boolean tooFarRight = box.getLeft() > App.SCREEN_WIDTH;
 		return tooHigh || tooLow || tooFarLeft || tooFarRight;
 	}
 	
@@ -42,8 +41,8 @@ public class Obstacle extends Sprite implements TimeSupport, Collidable {
 		}
 		float xDelta = movementVelocity.getHorizontal()*delta;
 		float yDelta = movementVelocity.getVertical()*delta;
-		float newX = getXPos() + xDelta;
-		float newY = getYPos() + yDelta;
-		setLocation(newX, newY);
+		float newX = centerPosition.getX() + xDelta;
+		float newY = centerPosition.getY() + yDelta;
+		setLocation(new Position(newX, newY));
 	}
 }

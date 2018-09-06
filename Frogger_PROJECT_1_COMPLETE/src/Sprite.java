@@ -1,22 +1,35 @@
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
-import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 
 import utilities.BoundingBox;
+import utilities.Position;
 
 public class Sprite { 
 	private BoundingBox hitBox = null;
 	private Image image;
 	private String spriteName;
 	private World world;
+	public Position centerPosition;
+	
 	public World getWorld() {
+
 		return world;
 	} 
 
-	private float x, y, height, width;
+	private float height, width;
 
-	protected BoundingBox getHitBox() {
+	public Position getPosition() {
+		return centerPosition;
+	}
+	
+	public Position getLeftAnchor() {
+		float anchorX = centerPosition.getX() - width/2;
+		float anchorY = centerPosition.getY() - height/2;
+		return new Position(anchorX, anchorY);
+	}
+	
+	public BoundingBox getHitBox() {
 		return hitBox;
 	} 
 	
@@ -31,22 +44,6 @@ public class Sprite {
 	public float getHeight() {
 		return height;
 	} 
-	
-	public float getRight() {
-		return x + width/2;
-	}
-
-	public float getLeft() {
-		return x - width/2;
-	}
-	
-	public float getTop() {
-		return y + width/2;
-	}
-
-	public float getBottom() {
-		return y - width/2;
-	}
 	 
 	public void setImageSource(String value) throws SlickException {
 		image = new Image(value);
@@ -55,17 +52,11 @@ public class Sprite {
 		//System.out.format("| Image Source =  %s, Dimensions = %.0fx%.0f| ", value, width, height);
 	}
 	
-	public float getXPos() {
-		return x + width/2;
-	}
-	
-	public float getYPos() {
-		return y + height/2;
-	}
-	
-	protected void setLocation(float centerX, float centerY) { 
-		x = centerX - width/2; 
-		y = centerY - height/2;
+	protected void setLocation(Position centerLoc) { 
+		centerPosition = centerLoc;
+		float x = centerLoc.getX() - width/2; 
+		float y = centerLoc.getY() - height/2;
+		
 		if (hitBox == null) {
 			hitBox = new BoundingBox(image, x, y);
 		} else {
@@ -74,18 +65,14 @@ public class Sprite {
 		}
 	}  
 	
-	public Sprite(World spawn_world, String Name, String imageSrc, float centerX, float centerY) throws SlickException { 
+	public Sprite(World spawn_world, String Name, String imageSrc, Position centerPos) throws SlickException { 
 		this.world = spawn_world;
 		spriteName = Name;
 		setImageSource(imageSrc);
-		setLocation(centerX, centerY);
-	}
-	
-	public void update(Input input, int delta) {
-				
+		setLocation(centerPos);
 	}
 	
 	public void render(Graphics g) { 
-		g.drawImage(image, x, y);		
+		g.drawImage(image, getLeftAnchor().getX(), getLeftAnchor().getY());		
 	} 
 }
