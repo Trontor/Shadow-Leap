@@ -59,7 +59,7 @@ public class Player extends Sprite implements KeySupport, CollisionDetection {
 	 */
 	public void onCollision(Sprite sprite) {
 		/* signals player has died */
-		getWorld().ChangeGameState(WorldState.Death);
+		getWorld().ChangeWorldState(WorldState.Death);
 	}
 	
 	/* Determines if the player has collided with an object
