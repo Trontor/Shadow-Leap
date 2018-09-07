@@ -108,8 +108,7 @@ public class Obstacle extends Sprite implements TimeSupport, Collidable {
 		if (movementVelocity.getMagnitude() == 0) {
 			return;
 		} 
-		if (outOfBounds()) {
-			System.out.println("tick");
+		if (outOfBounds()) { 
 			respawn();
 			return;
 		}
