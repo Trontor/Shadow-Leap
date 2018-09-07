@@ -67,13 +67,6 @@ public class Obstacle extends Sprite implements TimeSupport, Collidable {
 		 */
 		boolean horizontalExtend = roundedX < 0 || roundedX > App.SCREEN_WIDTH;
 		boolean verticalExtend = roundedY < 0 || roundedY > App.SCREEN_HEIGHT;
-		/* Rounds the extension to the nearest edge to account for over-extension */
-		if (horizontalExtend) {
-			roundedX = centerPosition.getX(); 
-		}
-		if (verticalExtend) {
-			roundedY = centerPosition.getY();  
-		}
 		/* performs loop arithmetic with error-fixed values p(new) = (p(old) + v) % (height/width)*/
 		/* math.stackexchange.com/questions/2907303/finding-opposite-edge-wraparound-location-given-vector-and-location */
 		float newX = roundedX + movementVelocity.getHorizontal(); 
@@ -84,8 +77,8 @@ public class Obstacle extends Sprite implements TimeSupport, Collidable {
 		 * also respawns bus as close to out-of-bounds as possible to enforce a smooth animation
 		 * */
 		if (horizontalExtend) {
-			newX = getClosestWall(newX);
 			float widthPadding = getWidth()/2 - 1.5f;
+			newX = getClosestWall(newX);
 			if (newX == 0) {
 				newX -= widthPadding;
 			} else {
