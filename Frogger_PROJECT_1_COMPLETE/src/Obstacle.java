@@ -69,10 +69,10 @@ public class Obstacle extends Sprite implements TimeSupport, Collidable {
 		boolean verticalExtend = roundedY < 0 || roundedY > App.SCREEN_HEIGHT;
 		/* Rounds the extension to the nearest edge to account for over-extension */
 		if (horizontalExtend) {
-			roundedX = getClosestWall(centerPosition.getX()); 
+			roundedX = centerPosition.getX(); 
 		}
 		if (verticalExtend) {
-			roundedY = getClosestWall(centerPosition.getY());  
+			roundedY = centerPosition.getY();  
 		}
 		/* performs loop arithmetic with error-fixed values p(new) = (p(old) + v) % (height/width)*/
 		/* math.stackexchange.com/questions/2907303/finding-opposite-edge-wraparound-location-given-vector-and-location */
@@ -80,11 +80,27 @@ public class Obstacle extends Sprite implements TimeSupport, Collidable {
 		float newY = roundedY + movementVelocity.getVertical();  
 		newX = (newX % App.SCREEN_WIDTH) + (newX < 0 ? App.SCREEN_WIDTH : 0);
 		newY = (newY % App.SCREEN_HEIGHT) + (newY < 0 ? App.SCREEN_HEIGHT : 0);
-		/* performs further error-adjustment that may have resulted in bugged modulo arithmetic */
-		if (horizontalExtend)
+		/* performs further error-adjustment that may have resulted in bugged modulo arithmetic 
+		 * also respawns bus as close to out-of-bounds as possible to enforce a smooth animation
+		 * */
+		if (horizontalExtend) {
 			newX = getClosestWall(newX);
-		if (verticalExtend)
+			float widthPadding = getWidth()/2 - 1.5f;
+			if (newX == 0) {
+				newX -= widthPadding;
+			} else {
+				newX += widthPadding;
+			}
+		}
+		if (verticalExtend) {
+			float heightPadding = getHeight()/2 - 1.5f;
 			newY = getClosestCeiling(newY);
+			if (newY == 0) {
+				newY -= heightPadding;
+			} else {
+				newY += heightPadding;
+			}
+		}
 		/* returns, logs, and sets the new position */
 		Position newPos = new Position(newX, newY);
 		System.out.format("[Respawn] Respawning at %s\n", newPos);
@@ -100,6 +116,7 @@ public class Obstacle extends Sprite implements TimeSupport, Collidable {
 			return;
 		} 
 		if (outOfBounds()) {
+			System.out.println("tick");
 			respawn();
 			return;
 		}
