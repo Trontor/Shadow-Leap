@@ -72,7 +72,7 @@ public class Sprite {
 	/** Change the location of the Sprite
 	 * @param centerLoc The position to center the Sprite around
 	 */
-	protected void setLocation(Position centerLoc) { 
+	public void setLocation(Position centerLoc) { 
 		centerPosition = centerLoc;
 		if (hitBox == null) {
 			hitBox = new BoundingBox(image, centerPosition);
@@ -82,6 +82,13 @@ public class Sprite {
 		if (outOfBounds()) {
 			//System.out.format("[OutOfBounds] %s at %s\n", spriteName, centerLoc);
 		}
+	}  
+	
+	public void setLocationDelta(float deltaX, float deltaY) { 
+		float newX = centerPosition.getX() + deltaX;
+		float newY = centerPosition.getY() + deltaY;
+		Position newPos = new Position(newX, newY);
+		setLocation(newPos);
 	}  
 	
 	/** Initialises a new Sprite object

@@ -18,6 +18,7 @@ public class World {
 	private final int LEVEL;
 
 	private final Map<String, AssetType> AssetTypes = new HashMap<String, AssetType>();
+	private final Map<String, Velocity> SpeedInfo = new HashMap<String, Velocity>();
 	/** A list of all Sprites currently on the world */
 	private List<Sprite> spriteMap;
 	public List<Sprite> getSpriteMap(){
@@ -30,9 +31,20 @@ public class World {
 		AssetTypes.put("grass", AssetType.Tile);
 		AssetTypes.put("tree", AssetType.Tile);
 		AssetTypes.put("bus", AssetType.MovingObstacle);
+		AssetTypes.put("bike", AssetType.MovingObstacle);
 		AssetTypes.put("bulldozer", AssetType.MovingObstacle);
-		AssetTypes.put("log", AssetType.MovingObstacle);
-		AssetTypes.put("longlog", AssetType.MovingObstacle);
+		AssetTypes.put("log", AssetType.Ridable);
+		AssetTypes.put("longlog", AssetType.Ridable);
+		AssetTypes.put("racecar", AssetType.MovingObstacle);
+		AssetTypes.put("turtle", AssetType.PassiveObstacle);
+		
+		SpeedInfo.put("bus", new Velocity(0.15f, 0));
+		SpeedInfo.put("bike", new Velocity(0.2f, 0));
+		SpeedInfo.put("bulldozer", new Velocity(0.05f, 0));
+		SpeedInfo.put("log", new Velocity(0.1f, 0));
+		SpeedInfo.put("longlog", new Velocity(0.07f, 0));
+		SpeedInfo.put("racecar", new Velocity(0.5f, 0));
+		SpeedInfo.put("turtle", new Velocity(0.085f, 0));
 		
 		this.LEVEL = level; 
 		try {
@@ -82,10 +94,20 @@ public class World {
 			float x = Float.parseFloat(assetInfo[1]);
 			float y = Float.parseFloat(assetInfo[2]);
 			Position spawnPos = new Position(x, y);
+			
+			
+			boolean moveRight;
+			Velocity newVelocity = new Velocity(0, 0);
+			/* checks if there is information about direction of movement*/
+			if (assetInfo.length > 3) {
+				if (SpeedInfo.containsKey(assetName)) {
+					newVelocity = SpeedInfo.get(assetName);
+				} 
+				moveRight = Boolean.parseBoolean(assetInfo[3]);
+				newVelocity = new Velocity((moveRight ? 1: -1)*newVelocity.getHorizontal(), 0);
+			}
 			switch (assetType) {
 			case MovingObstacle: 
-				boolean moveRight = Boolean.parseBoolean(assetInfo[3]);
-				Velocity newVelocity = new Velocity((moveRight ? 1: -1)*0.15f, 0);
 				newSprite = new Obstacle(this, assetName, imageSrc, spawnPos, newVelocity);
 				break;
 			case PassiveObstacle: 
@@ -94,6 +116,9 @@ public class World {
 			case Tile: 
 				newSprite = new Sprite(this, assetName, imageSrc, spawnPos);
 				break; 
+			case Ridable:
+				moveRight = Boolean.parseBoolean(assetInfo[3]); 
+				newSprite = new Rideable(this, assetName, imageSrc, spawnPos, newVelocity);
 			}
 			if (newSprite != null) {
 				spriteMap.add(newSprite);
@@ -175,7 +200,7 @@ public class World {
 	 */
 	public void onKeyPressed(int key, char c) {
 		List<Sprite> keySupportSprites = getSpriteMap().stream()
-													   .filter(s-> s instanceof KeySupport)
+														.filter(s-> s instanceof KeySupport)
 													   .collect(Collectors.toList());
 		for (Sprite s: keySupportSprites) {
 			((KeySupport)s).onKeyPress(key, c);

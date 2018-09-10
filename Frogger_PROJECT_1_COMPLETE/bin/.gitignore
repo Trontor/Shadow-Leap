@@ -1,9 +1,7 @@
-/Vehicle.class
-/MovingObstacle.class
-/PassiveObstacle.class
-/AssetType.class
-/ActionObstacle.class
-/MovingActionObstacle.class
 /ActionSupport.class
-/Bulldozer.class
 /Obstacle.class
+/MovingSprite.class
+/Rideable.class
+/Actionable.class
+/Touchable.class
+/utilities/

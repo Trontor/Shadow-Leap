@@ -9,6 +9,7 @@ import utilities.Position;
 public class Player extends Sprite implements KeySupport, CollisionDetection {
 	
 	private int LIVES;
+	private Rideable currentlyRiding;
 	public Player(World spawnWorld, String imageSrc, Position centerPos) throws SlickException {
 		super(spawnWorld, "Player", imageSrc, centerPos);
 	}   
@@ -66,14 +67,38 @@ public class Player extends Sprite implements KeySupport, CollisionDetection {
 	/* Determines if the player has collided with an object
 	 * @see TimeSupport#onTimeTick(int)
 	 */
-	public void onTimeTick(int delta) {
-		List<Sprite> collidableObjects = getWorld().getSpriteMap().stream()
-																  .filter(s->s instanceof Collidable)
-																  .collect(Collectors.toList()); 
-		for (Sprite sprite : collidableObjects) {
-			if (getHitBox().intersects(sprite.getHitBox())) {
-				onCollision(sprite);
+	public void onTimeTick(int delta) { 
+		List<Sprite> intersectingSprites = getWorld().getSpriteMap().stream()
+				  .filter(s-> s != this && s.getHitBox().intersects(this.getHitBox()))
+				  .collect(Collectors.toList()); 
+		
+		List<Sprite> rideableSprites = intersectingSprites.stream()
+				  .filter(s-> s instanceof Rideable)
+				  .collect(Collectors.toList()); 
+		if (rideableSprites.size() > 0) {
+			/* attach Sprite to first rideable object */
+			Rideable driver = (Rideable)rideableSprites.get(0);
+			if (currentlyRiding != null && currentlyRiding != driver) {
+				RemoveDrivers();
 			}
+			currentlyRiding = driver;
+			driver.OnTouch(this);
+			return;
+		} else if (currentlyRiding != null) {
+			/* remove Sprite from object */
+			RemoveDrivers();
+		} 
+
+		List<Sprite> collidableSprites = intersectingSprites.stream()
+				  .filter(s-> s instanceof Collidable)
+				  .collect(Collectors.toList()); 
+		if (collidableSprites.size() > 0) {
+			/* We are colliding */
+			onCollision(collidableSprites.get(0));
 		}
+	}
+	private void RemoveDrivers() { 
+		currentlyRiding.RemoveRider(this); 
+		currentlyRiding = null;
 	}
 }
