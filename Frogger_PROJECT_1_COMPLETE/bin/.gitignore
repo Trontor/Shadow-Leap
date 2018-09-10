@@ -1,3 +1,9 @@
 /Vehicle.class
 /MovingObstacle.class
 /PassiveObstacle.class
+/AssetType.class
+/ActionObstacle.class
+/MovingActionObstacle.class
+/ActionSupport.class
+/Bulldozer.class
+/Obstacle.class

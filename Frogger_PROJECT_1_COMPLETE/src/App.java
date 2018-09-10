@@ -28,7 +28,7 @@ public class App extends BasicGame {
     @Override
     public void init(GameContainer gc)
             throws SlickException {
-        world = new World(0);
+            world = new World(0);
     }
 
     /* (non-Javadoc)

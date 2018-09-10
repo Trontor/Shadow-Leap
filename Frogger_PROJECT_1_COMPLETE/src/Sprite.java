@@ -80,7 +80,7 @@ public class Sprite {
 		hitBox.setX(centerLoc.getX());
 		hitBox.setY(centerLoc.getY());
 		if (outOfBounds()) {
-			System.out.format("[OutOfBounds] %s at %s\n", spriteName, centerLoc);
+			//System.out.format("[OutOfBounds] %s at %s\n", spriteName, centerLoc);
 		}
 	}  
 	

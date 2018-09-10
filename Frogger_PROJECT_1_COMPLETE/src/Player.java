@@ -8,6 +8,7 @@ import utilities.Position;
 
 public class Player extends Sprite implements KeySupport, CollisionDetection {
 	
+	private int LIVES;
 	public Player(World spawnWorld, String imageSrc, Position centerPos) throws SlickException {
 		super(spawnWorld, "Player", imageSrc, centerPos);
 	}   

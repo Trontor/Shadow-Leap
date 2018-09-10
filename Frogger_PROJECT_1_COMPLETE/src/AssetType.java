@@ -1,6 +1,7 @@
 
 public enum AssetType {
 	Tile,
-	Obstacle,
-	Vehicle
+	PassiveObstacle,
+	Ridable,
+	MovingObstacle
 }

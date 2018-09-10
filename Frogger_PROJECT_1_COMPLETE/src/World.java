@@ -1,7 +1,5 @@
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.FileNotFoundException; 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,20 +26,19 @@ public class World {
 	
 	/** Initialises a new World */
 	public World(int level) {
-		AssetTypes.put("water", AssetType.Obstacle);
+		AssetTypes.put("water", AssetType.PassiveObstacle);
 		AssetTypes.put("grass", AssetType.Tile);
 		AssetTypes.put("tree", AssetType.Tile);
-		AssetTypes.put("bus", AssetType.Vehicle);
-		AssetTypes.put("bulldozer", AssetType.Vehicle);
-		AssetTypes.put("log", AssetType.Vehicle);
-		AssetTypes.put("longlog", AssetType.Vehicle);
+		AssetTypes.put("bus", AssetType.MovingObstacle);
+		AssetTypes.put("bulldozer", AssetType.MovingObstacle);
+		AssetTypes.put("log", AssetType.MovingObstacle);
+		AssetTypes.put("longlog", AssetType.MovingObstacle);
 		
 		this.LEVEL = level; 
 		try {
+			//AddMap();
 			LoadAssets();
-			AddMap();
 			AddPlayers(); 
-			AddObstacles();
 		} catch (SlickException e) { 
 			e.printStackTrace();
 		}
@@ -66,7 +63,8 @@ public class World {
 		return lines;
 	}
 	
-	private void LoadAssets() {
+
+	private void LoadAssets() throws SlickException {
 		spriteMap = new ArrayList<Sprite>(); 
 		List<String> assets = ReadAssets();
 		for (String line : assets) {
@@ -76,40 +74,30 @@ public class World {
 			if (AssetTypes.containsKey(assetName)) {
 				assetType = AssetTypes.get(assetName);
 			} else {
-				System.out.println("Tried to load unknown asset type: " + assetName);
+				//System.out.println("Tried to load unknown asset type: " + assetName);
 				continue;
 			} 
+			Sprite newSprite = null;
+			String imageSrc = String.format("assets/%s.png", assetName);
 			float x = Float.parseFloat(assetInfo[1]);
 			float y = Float.parseFloat(assetInfo[2]);
 			Position spawnPos = new Position(x, y);
-			System.out.println(String.format("Loading asset %s at %s\n", assetName, spawnPos));
-		}
-	}
-	
-	/** Generates and adds all obstacles to the Sprite map
-	 * @throws SlickException Slick Library Error
-	 */
-	private void AddObstacles() throws SlickException {
-		List<PatternInfo> busPatterns = new ArrayList<PatternInfo>();
-		busPatterns.add(new PatternInfo(432, 6.5f, 48));
-		busPatterns.add(new PatternInfo(480, 5, 0));
-		busPatterns.add(new PatternInfo(528, 12, 64));
-		busPatterns.add(new PatternInfo(576, 5, 128));
-		busPatterns.add(new PatternInfo(624, 6.5f, 250));
-		/* the initial direction of the busses is left */
-		boolean right = false;
-		for(PatternInfo info : busPatterns) {
-			/* assign speed of bus */
-			Velocity busVelocity = new Velocity((right? -1: 1)*0.15f, 0);
-			/* determines the pixel distance between busses */
-			float xDelta = TILE_SIZE *(info.getSeparation() + 1);
-			for (float x = info.getOffset(); x < App.SCREEN_WIDTH; x += xDelta) {
-				Position spawnLocation = new Position(x, info.getYlocation());
-				Sprite newBus = new MovingObstacle(this, "Bus", "assets/bus.png", spawnLocation, busVelocity);
-				spriteMap.add(newBus);
+			switch (assetType) {
+			case MovingObstacle: 
+				boolean moveRight = Boolean.parseBoolean(assetInfo[3]);
+				Velocity newVelocity = new Velocity((moveRight ? 1: -1)*0.15f, 0);
+				newSprite = new Obstacle(this, assetName, imageSrc, spawnPos, newVelocity);
+				break;
+			case PassiveObstacle: 
+				newSprite = new Obstacle(this, assetName, imageSrc, spawnPos);
+				break; 
+			case Tile: 
+				newSprite = new Sprite(this, assetName, imageSrc, spawnPos);
+				break; 
 			}
-			/* flips the direction of movement for the next bus */
-			right = !right;
+			if (newSprite != null) {
+				spriteMap.add(newSprite);
+			}
 		}
 	}
 	
@@ -146,7 +134,7 @@ public class World {
 		/* fills water across specified y range*/
 		for (int y: waterYs) {
 			for (int x = 0; x <= App.SCREEN_WIDTH; x += TILE_SIZE) {
-				Sprite newSprite = new MovingObstacle(this, "Water", "assets/water.png", new Position(x, y), null);	
+				Sprite newSprite = new Obstacle(this, "Water", "assets/water.png", new Position(x, y), null);	
 				if (newSprite != null)
 					spriteMap.add(newSprite);	
 			}

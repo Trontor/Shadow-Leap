@@ -9,14 +9,17 @@ public class Obstacle extends Sprite implements TimeSupport, Collidable {
 	/**
 	 * Details movement speed and direction of obstacle
 	 */
-	private Velocity movementVelocity; 	
-	
+	private Velocity movementVelocity = new Velocity(0, 0);; 	
 	public Velocity getMovementVelocity() {
 		return movementVelocity;
 	}
-
 	public void setMovementVelocity(Velocity movementVelocity) {
 		this.movementVelocity = movementVelocity;
+	}
+	
+	private boolean rideable = false;
+	private boolean isRideable() {
+		return rideable;
 	}
 
 	/** Initialises a new Obstacle
@@ -27,14 +30,18 @@ public class Obstacle extends Sprite implements TimeSupport, Collidable {
 	 * @param speedInfo The Velocity the Obstacle moves at
 	 * @throws SlickException Slick Libary Error
 	 */
+	public Obstacle(World world, String obstacleName, String imageSrc, Position centerPos) throws SlickException {
+		super(world, obstacleName, imageSrc, centerPos);
+	}
 	public Obstacle(World world, String obstacleName, String imageSrc, Position centerPos, Velocity speedInfo) throws SlickException {
 		super(world, obstacleName, imageSrc, centerPos);
-		if (speedInfo == null) {
-			speedInfo = new Velocity(0,0);
-		}
 		movementVelocity = speedInfo;
 	}
-
+	public Obstacle(World world, String obstacleName, String imageSrc, Position centerPos, Velocity speedInfo, boolean rideable) throws SlickException {
+		super(world, obstacleName, imageSrc, centerPos);
+		rideable = true;
+		movementVelocity = speedInfo;
+	}
 	/** Identifies the closest vertical edge of the app window
 	 * @param xVal The x coordinate to find closest edge to 
 	 * @return The x coordinate of the closest edge (0 or Screen Width)
@@ -96,7 +103,7 @@ public class Obstacle extends Sprite implements TimeSupport, Collidable {
 		}
 		/* returns, logs, and sets the new position */
 		Position newPos = new Position(newX, newY);
-		System.out.format("[Respawn] Respawning at %s\n", newPos);
+		//System.out.format("[Respawn] Respawning at %s\n", newPos);
 		setLocation(newPos);
 	}
 	
