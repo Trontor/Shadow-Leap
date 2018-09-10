@@ -91,8 +91,8 @@ public class Sprite {
 	 * @param centerPos The location to spawn the Sprite at
 	 * @throws SlickException Slick Libary Error
 	 */
-	public Sprite(World spawn_world, String Name, String imageSrc, Position centerPos) throws SlickException { 
-		this.world = spawn_world;
+	public Sprite(World spawnWorld, String Name, String imageSrc, Position centerPos) throws SlickException { 
+		this.world = spawnWorld;
 		spriteName = Name;
 		setImage(imageSrc);
 		setLocation(centerPos);

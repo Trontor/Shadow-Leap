@@ -1,6 +1,13 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
@@ -10,23 +17,72 @@ import utilities.Position;
 public class World {
 	
 	private final int TILE_SIZE = 48;
+	private final int LEVEL;
 
+	private final Map<String, AssetType> AssetTypes = new HashMap<String, AssetType>();
 	/** A list of all Sprites currently on the world */
 	private List<Sprite> spriteMap;
 	public List<Sprite> getSpriteMap(){
 		return spriteMap;
-	}
-	
+	} 
 	
 	/** Initialises a new World */
-	public World() {
-		spriteMap = new ArrayList<Sprite>();
+	public World(int level) {
+		AssetTypes.put("water", AssetType.Obstacle);
+		AssetTypes.put("grass", AssetType.Tile);
+		AssetTypes.put("tree", AssetType.Tile);
+		AssetTypes.put("bus", AssetType.Vehicle);
+		AssetTypes.put("bulldozer", AssetType.Vehicle);
+		AssetTypes.put("log", AssetType.Vehicle);
+		AssetTypes.put("longlog", AssetType.Vehicle);
+		
+		this.LEVEL = level; 
 		try {
+			LoadAssets();
 			AddMap();
 			AddPlayers(); 
 			AddObstacles();
 		} catch (SlickException e) { 
 			e.printStackTrace();
+		}
+	}
+	
+	private List<String> ReadAssets() { 
+		List<String> lines = new ArrayList<String>();
+		File file = new File(String.format("assets/levels/%d.lvl", LEVEL));
+        Scanner sc = null;
+		try {
+			sc = new Scanner(file);
+	        while(sc.hasNextLine()){
+	        	lines.add(sc.nextLine());
+	        }
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (sc != null)
+				sc.close();
+		}
+		return lines;
+	}
+	
+	private void LoadAssets() {
+		spriteMap = new ArrayList<Sprite>(); 
+		List<String> assets = ReadAssets();
+		for (String line : assets) {
+			String[] assetInfo = line.split(",");
+			String assetName = assetInfo[0].toLowerCase();
+			AssetType assetType;
+			if (AssetTypes.containsKey(assetName)) {
+				assetType = AssetTypes.get(assetName);
+			} else {
+				System.out.println("Tried to load unknown asset type: " + assetName);
+				continue;
+			} 
+			float x = Float.parseFloat(assetInfo[1]);
+			float y = Float.parseFloat(assetInfo[2]);
+			Position spawnPos = new Position(x, y);
+			System.out.println(String.format("Loading asset %s at %s\n", assetName, spawnPos));
 		}
 	}
 	
@@ -49,7 +105,7 @@ public class World {
 			float xDelta = TILE_SIZE *(info.getSeparation() + 1);
 			for (float x = info.getOffset(); x < App.SCREEN_WIDTH; x += xDelta) {
 				Position spawnLocation = new Position(x, info.getYlocation());
-				Sprite newBus = new Obstacle(this, "Bus", "assets/bus.png", spawnLocation, busVelocity);
+				Sprite newBus = new MovingObstacle(this, "Bus", "assets/bus.png", spawnLocation, busVelocity);
 				spriteMap.add(newBus);
 			}
 			/* flips the direction of movement for the next bus */
@@ -75,7 +131,7 @@ public class World {
 		List<Integer> waterYs = new ArrayList<Integer>();
 		/* water filled in range y = 48 -> 336 */
 		int waterRangeStart = 48 + TILE_SIZE;
-		int waterRangeFinish = 336 ;
+		int waterRangeFinish = 336;
 		for (int i = waterRangeStart; i <= waterRangeFinish; i += TILE_SIZE) {
 			waterYs.add(i);
 		}
@@ -90,7 +146,7 @@ public class World {
 		/* fills water across specified y range*/
 		for (int y: waterYs) {
 			for (int x = 0; x <= App.SCREEN_WIDTH; x += TILE_SIZE) {
-				Sprite newSprite = new Obstacle(this, "Water", "assets/water.png", new Position(x, y), null);	
+				Sprite newSprite = new MovingObstacle(this, "Water", "assets/water.png", new Position(x, y), null);	
 				if (newSprite != null)
 					spriteMap.add(newSprite);	
 			}
