@@ -2,5 +2,5 @@
  * @author Rohyl Joshi
  */
 public enum WorldState {
-	Finished, Death
+	Finished, Death, PartlyFinished
 }

@@ -73,10 +73,7 @@ public class Sprite {
 	 * @param centerLoc The position to center the Sprite around
 	 */
 	public void setLocation(Position centerLoc) { 
-		centerPosition = centerLoc;
-		if (hitBox == null) {
-			hitBox = new BoundingBox(image, centerPosition);
-		} 
+		centerPosition = centerLoc; 
 		hitBox.setX(centerLoc.getX());
 		hitBox.setY(centerLoc.getY());
 		if (outOfBounds()) {
@@ -100,8 +97,11 @@ public class Sprite {
 	 */
 	public Sprite(World spawnWorld, String Name, String imageSrc, Position centerPos) throws SlickException { 
 		this.world = spawnWorld;
-		spriteName = Name;
-		setImage(imageSrc);
+		spriteName = Name;		 
+		setImage(imageSrc);	
+		if (hitBox == null) {
+			hitBox = new BoundingBox(image, centerPos);
+		} 
 		setLocation(centerPos);
 	}
 	

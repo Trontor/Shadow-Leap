@@ -6,7 +6,7 @@ import org.newdawn.slick.SlickException;
 
 import utilities.Position; 
 
-public class Player extends Sprite implements KeySupport, CollisionDetection {
+public class Player extends Sprite implements KeySupport, TimeSupport, CollisionDetection, Boundable {
 	
 	private int LIVES;
 	private Rideable currentlyRiding;
@@ -14,20 +14,26 @@ public class Player extends Sprite implements KeySupport, CollisionDetection {
 		super(spawnWorld, "Player", imageSrc, centerPos);
 	}   
 	 
-	/* Ensures that the player stays within the screen bounds 
-	 * @see Sprite#setLocation(utilities.Position)
-	 */
-	@Override
-	public void setLocation(Position center) { 
+	private boolean FutureOutOfBounds(Position futurePos) {
 		float offset = super.getWidth()/2;
-		float rightX = center.getX() + offset;
-		float leftX = center.getX() - offset;
-		float topY = center.getY() + offset;
-		float bottomY = center.getY() - offset; 
+		float rightX = futurePos.getX() + offset;
+		float leftX = futurePos.getX() - offset;
+		float topY = futurePos.getY() + offset;
+		float bottomY = futurePos.getY() - offset; 
 		float maxX = App.SCREEN_WIDTH;
 		float maxY = App.SCREEN_HEIGHT;
-		if (rightX > maxX || leftX < 0 || topY > maxY || bottomY < 0)
+		return rightX > maxX || leftX < 0 || topY > maxY || bottomY < 0;
+	}
+	@Override
+	public void setLocation(Position center) { 
+		if (currentlyRiding == null && FutureOutOfBounds(center)) {
 			return;
+		} else if (super.outOfBounds()) { 
+			OnBoundsExtended();
+		}
+		if (center.getY() <= getWorld().FINISH_HEIGHT) {
+			getWorld().ChangeWorldState(WorldState.PartlyFinished);
+		}
 		super.setLocation(center);
 	} 
 
@@ -53,13 +59,26 @@ public class Player extends Sprite implements KeySupport, CollisionDetection {
 				newX += delta;
 				break;
 		}
-		setLocation(new Position(newX, newY));
+		Position newPos = new Position(newX, newY); 
+		for (Sprite s : super.getWorld().getSpritesAt(newPos)) {
+			if (getWorld().getAssetType(s.getSpriteName()) == AssetType.SolidTile) {
+				System.out.println("Intersection with solid, can't move.");
+				return;
+			}
+		}
+		setLocation(newPos);
 	}
 
+	@Override
+	public void OnBoundsExtended() {
+		/* signals player has died */
+		getWorld().ChangeWorldState(WorldState.Death);
+	}
+	
 	/* (non-Javadoc)
 	 * @see CollisionDetection#onCollision(Sprite)
 	 */
-	public void onCollision(Sprite sprite) {
+	public void OnCollision(Sprite sprite) {
 		/* signals player has died */
 		getWorld().ChangeWorldState(WorldState.Death);
 	}
@@ -68,6 +87,7 @@ public class Player extends Sprite implements KeySupport, CollisionDetection {
 	 * @see TimeSupport#onTimeTick(int)
 	 */
 	public void onTimeTick(int delta) { 
+		
 		List<Sprite> intersectingSprites = getWorld().getSpriteMap().stream()
 				  .filter(s-> s != this && s.getHitBox().intersects(this.getHitBox()))
 				  .collect(Collectors.toList()); 
@@ -80,24 +100,26 @@ public class Player extends Sprite implements KeySupport, CollisionDetection {
 			Rideable driver = (Rideable)rideableSprites.get(0);
 			if (currentlyRiding != null && currentlyRiding != driver) {
 				RemoveDrivers();
+			} else if (currentlyRiding != driver) {
+				System.out.println("Attached new driver");
+				currentlyRiding = driver;
+				driver.OnTouch(this);
 			}
-			currentlyRiding = driver;
-			driver.OnTouch(this);
 			return;
 		} else if (currentlyRiding != null) {
 			/* remove Sprite from object */
 			RemoveDrivers();
 		} 
-
 		List<Sprite> collidableSprites = intersectingSprites.stream()
 				  .filter(s-> s instanceof Collidable)
 				  .collect(Collectors.toList()); 
 		if (collidableSprites.size() > 0) {
 			/* We are colliding */
-			onCollision(collidableSprites.get(0));
+			OnCollision(collidableSprites.get(0));
 		}
 	}
 	private void RemoveDrivers() { 
+		System.out.println("Detached driver");
 		currentlyRiding.RemoveRider(this); 
 		currentlyRiding = null;
 	}

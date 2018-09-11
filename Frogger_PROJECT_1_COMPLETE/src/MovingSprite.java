@@ -82,8 +82,7 @@ public class MovingSprite extends Sprite implements TimeSupport {
 		if (movementVelocity.getMagnitude() == 0) {
 			return;
 		} 
-		boolean tooFarRight = super.getHitBox().getLeft() > App.SCREEN_WIDTH; 
-		boolean tooFarLeft = super.getHitBox().getRight() < 0;
+		 
 		if (outOfBounds()) {
 			//System.out.format("[OutOfBounds] %s at %s, too far right = %s (right = %.2f), too far left = %s (left = %.2f)\n", super.getSpriteName(), super.getPosition(), String.valueOf(tooFarRight), super.getHitBox().getLeft(), String.valueOf(tooFarLeft), super.getHitBox().getRight());
 			respawn();

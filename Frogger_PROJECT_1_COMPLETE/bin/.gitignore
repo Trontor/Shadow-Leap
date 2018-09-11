@@ -1,7 +1,2 @@
-/ActionSupport.class
-/Obstacle.class
-/MovingSprite.class
-/Rideable.class
-/Actionable.class
-/Touchable.class
-/utilities/
+/Boundable.class
+/CollisionDetection.class
