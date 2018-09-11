@@ -1,6 +1,7 @@
 package utilities;
 public class Position {
-	private float x, y;
+	private final float x;
+	private final float y;
 
 	public float getX() {
 		return x;
@@ -19,6 +20,12 @@ public class Position {
 		this.y = y;
 	}
 
+	public float DistanceTo(Position compare) {
+		float deltaX = compare.getX()-this.getX();
+		float deltaY = compare.getY()-this.getY();
+		return (float)Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof Position))
