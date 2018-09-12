@@ -199,11 +199,14 @@ public  class World {
 	 * @param state The state to change base.WorldState to
 	 */
 	public void ChangeWorldState(WorldState state) {
+		System.out.println("CHANGE WORLD STATE");
 		switch(state) {
 			case Death:
 			  if (!player.removeLife()){
 			    App.CloseGame();
         } else {
+    		System.out.println("SETLOC");
+    		player.detachDriver();
 			    player.setLocation(PLAYER_START_POS);
         }
 		  case Finished:

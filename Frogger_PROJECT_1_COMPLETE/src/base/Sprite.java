@@ -29,6 +29,9 @@ public class Sprite {
 		height = image.getHeight();
 		width = image.getWidth();  
 	}
+	public void setImage(Image image) {
+		this.image = image;
+	}
 	
 	/* descriptive name to identify the object, used for equality */
 	private final String spriteName;

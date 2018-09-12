@@ -5,6 +5,10 @@ import base.Velocity;
 import core.World;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.lwjgl.Sys;
+import org.newdawn.slick.Image;
+
 import utilities.Position;
 
 public class BikeSprite extends Obstacle {
@@ -13,9 +17,18 @@ public class BikeSprite extends Obstacle {
   private final int REVERSE_MAX_BOUND = 1000;
   public BikeSprite(World spawnWorld, String obstacleName, String imageSrc,
       Position centerPos, Velocity speedInfo) {
-    super(spawnWorld, obstacleName, imageSrc, centerPos, speedInfo);
+    super(spawnWorld, obstacleName, imageSrc, centerPos, speedInfo); 
+    if (speedInfo.getHorizontal() < 0) {
+    	System.out.println("Reversed");
+        reverseImage();
+    }
   }
 
+  private void reverseImage() {
+	  Image i = this.getImage();
+	  this.setImage(i.getFlippedCopy(true, false));
+  }
+  
   @Override
   public void onTimeTick(int delta) {
     super.onTimeTick(delta);
@@ -24,6 +37,7 @@ public class BikeSprite extends Obstacle {
       Velocity currVel = getMovementVelocity();
       Velocity newVel = new Velocity(currVel.getHorizontal() * -1, currVel.getVertical());
       setMovementVelocity(newVel);
+      reverseImage();
     }
   }
 }

@@ -84,6 +84,10 @@ public class App extends BasicGame {
     /** [Future] Enables world switching functionality
      */
     public static void nextWorld() {
+        if (worldNum > NUM_WORLDS) {
+        	App.CloseGame();
+        	return;
+        }
         worldNum++;
         world = new World(worldNum);
     }

@@ -10,6 +10,7 @@ import org.newdawn.slick.SlickException;
 
 import utilities.Position;
 import core.*;
+import customsprites.SolidPushSprite;
 
 public class Player extends Sprite
     implements KeySupport, TimeSupport, CollisionDetection, Boundable, Rideable {
@@ -121,21 +122,9 @@ public class Player extends Sprite
 	 */
 
 	public void onTimeTick(int delta) {
-        List<Sprite> rideableSprites = getWorld().getIntersectingSprites(this).stream()
-                .filter(s-> s instanceof Driver)
-                .collect(Collectors.toList());
-        if (rideableSprites.size() > 0) {
-            Driver driver = (Driver)rideableSprites.get(0);
-            if (currentlyDriving != null && currentlyDriving != driver) {
-                detachDriver();
-            } else if (currentlyDriving != driver && driver.isRideable()) {
-                attachDriver(driver);
-            }
-            return;
-        } else if (currentlyDriving != null) {
-            /* remove base.Sprite from object */
-          detachDriver();
-        }
+		if (currentlyDriving != null) {
+			return;
+		}
         checkCollision();
         if (centerPosition.getY() <= getWorld().WINNING_Y) {
           getWorld().ChangeWorldState(WorldState.PartlyFinished);
@@ -158,6 +147,7 @@ public class Player extends Sprite
 
   @Override
   public void detachDriver() {
+	    if (currentlyDriving == null)return;
     System.out.println("Detached driver");
     currentlyDriving.removeRider(this);
     currentlyDriving = null;
@@ -165,6 +155,9 @@ public class Player extends Sprite
 
   @Override
   public void attachDriver(Driver driver) {
+    if (currentlyDriving == driver) {
+    	return;
+    }
     System.out.println("Attached new driver");
     currentlyDriving = driver;
     driver.onTouch(this);

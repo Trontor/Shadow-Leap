@@ -1,7 +1,9 @@
 package base;
 
+import java.sql.DriverPropertyInfo;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import utilities.Position;
 import core.World;
@@ -11,7 +13,11 @@ public class Driver extends MovingSprite implements Touchable {
 	private List<Rideable> ridingSprites;
   private boolean rideable = true;
 
-  public boolean isRideable() {
+  public List<Rideable> getRidingSprites() {
+	return ridingSprites;
+} 
+
+public boolean isRideable() {
     return rideable;
   }
 
@@ -39,17 +45,41 @@ public class Driver extends MovingSprite implements Touchable {
 	}  
 	
 	@Override
-	public void onTimeTick(int delta) { 
+	public void onTimeTick(int delta) {
+		checkTouch();
 		float deltaX = super.getMovementVelocity().getHorizontal() * delta;
 		float deltaY = super.getMovementVelocity().getVertical() * delta;
 		ridingSprites.forEach(s->((Sprite)s).setLocationDelta(deltaX, deltaY));
+       
 		super.onTimeTick(delta);
 	}
-
+	
 	@Override
 	public void onTouch(Sprite touching) {
 		if (touching instanceof Rideable && !ridingSprites.contains(touching)) {
 			ridingSprites.add((Rideable)touching);
 		}
+	}
+
+	@Override
+	public void checkTouch() {
+		List<Sprite> riders = getWorld().getIntersectingSprites(this).stream()
+																	   .filter(s->s instanceof Rideable)
+																	   .collect(Collectors.toList());
+		for (int i = 0; i < ridingSprites.size(); i++) {
+			Rideable rider = ridingSprites.get(i);
+			if (!riders.contains(rider)) {
+				rider.detachDriver();
+				i++;
+			} 
+		}
+		for (Sprite newRiders : riders) {
+			if (!ridingSprites.contains(newRiders)) {
+				System.out.println("Attache");
+				((Rideable)newRiders).detachDriver();
+				((Rideable)newRiders).attachDriver(this);
+				ridingSprites.add((Rideable)newRiders);
+			}
+		}		
 	}  
 }
