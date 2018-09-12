@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 import org.newdawn.slick.Graphics;
@@ -34,6 +35,11 @@ public  class World {
 	private final List<Position> winningPositions = new ArrayList<>();
 	private final Position PLAYER_START_POS = new Position(512, 720);
 	private final String WIN_MARKER = "filledhole";
+  private final int EXTRA_LIFE_MIN_WAIT = 2;
+  private final int EXTRA_LIFE_MAX_WAIT = 3;
+  private final int extraLifeSpawnTime;
+  private boolean hasSpawnedExtraLife;
+  private int runTime = 0;
 
 	/** A list of all Sprites currently on the world */
 	private List<Sprite> spriteMap;
@@ -101,7 +107,8 @@ public  class World {
 
 		this.LEVEL = level;
 		loadAssets();
-		AddPlayer();
+		addPlayer();
+    extraLifeSpawnTime = getRandomNumber(EXTRA_LIFE_MIN_WAIT, EXTRA_LIFE_MAX_WAIT) * 1000;
 	}
 	
 	private List<String> readAssets() { 
@@ -188,17 +195,23 @@ public  class World {
 	/**
    * Adds all the players to the base.Sprite Map
 	 */
-	private void AddPlayer() { 
+	private void addPlayer() {
 		player = new Player(this, "assets/frog.png", PLAYER_START_POS);
 		if (player != null) {
 			spriteMap.add(player);
 		}
-	}  
+	}
+
+	public void removeSprite(Sprite sprite){
+		if (spriteMap.contains(sprite)){
+			spriteMap.remove(sprite);
+		}
+	}
 	
 	/** Changes the state of the world
 	 * @param state The state to change base.WorldState to
 	 */
-	public void ChangeWorldState(WorldState state) {
+	public void changeWorldState(WorldState state) {
 		System.out.println("World State Changed: " + "Current State = " + state.toString());
 		switch(state) {
 			case Death:
@@ -225,19 +238,24 @@ public  class World {
 	 * @param delta Time passed since last frame (milliseconds).
 	 */
 	public void update(Input input, int delta) {
+    runTime += delta;
+    if (!hasSpawnedExtraLife && runTime >= extraLifeSpawnTime){
+      SpawnExtraLife();
+      hasSpawnedExtraLife = true;
+    }
 		List<Sprite> timeSupportSprites = getSpriteMap().stream()
 													    .filter(s-> s instanceof TimeSupport)
 													    .collect(Collectors.toList());
 		for (Sprite s : timeSupportSprites) {
 			((TimeSupport)s).onTimeTick(delta);
-		}	
+		}
 	}
 	
 	/** Signals all key-pressed Sprites of a new key press
 	 * @param key Integer value of pressed key (ASCII)
 	 * @param c Java character representation of pressed key
 	 */
-	public void OnKeyPressed(int key, char c) {
+	public void onKeyPressed(int key, char c) {
 		List<Sprite> keySupportSprites = getSpriteMap().stream()
 														.filter(s-> s instanceof KeySupport)
 													   .collect(Collectors.toList());
@@ -273,5 +291,23 @@ public  class World {
 				returnList.add(s);
 		}
 		return returnList;
+	}
+
+	private int getRandomNumber(int min, int max){
+    int diff = max - min;
+    Random random = new Random();
+    int i = random.nextInt(diff + 1);
+    i += min;
+    return i;
+  }
+
+	private void SpawnExtraLife(){
+	  List<Sprite> logs = getSpriteMap().stream().filter(s->s.getSpriteName().contains("log"))
+        .collect(Collectors.toList());
+    Sprite randomLog = logs.get(getRandomNumber(0,logs.size()-1));
+    PowerUp extraLife = new PowerUp(this, "extralife", "assets/extralife.png",  randomLog.getPosition());
+    extraLife.attachDriver((Driver)randomLog);
+    System.out.println("Spawned extra life on log at " + extraLife.getPosition());
+    spriteMap.add(extraLife);
 	}
 }

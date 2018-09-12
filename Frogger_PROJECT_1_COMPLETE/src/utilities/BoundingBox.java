@@ -81,4 +81,17 @@ public class BoundingBox {
         || other.top > getBottom()
         || other.getBottom() < top);
   }
+
+  public boolean intersects(Position other) {
+    boolean belowTop = other.getY() < getTop();
+    boolean aboveBottom = other.getY() > getBottom();
+    boolean rightOfLeft = other.getX() > getLeft();
+    boolean leftOfRight = other.getX() < getRight();
+    return belowTop && aboveBottom && rightOfLeft && leftOfRight;
+  }
+
+  @Override
+  public String toString() {
+    return String.format("Top = %.2f, Bottom = %.2f, Left = %.2f, Right = %.2f", getTop(), getBottom(), getLeft(), getRight());
+  }
 }

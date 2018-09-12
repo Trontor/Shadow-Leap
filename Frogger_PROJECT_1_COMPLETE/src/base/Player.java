@@ -10,7 +10,6 @@ import org.newdawn.slick.SlickException;
 
 import utilities.Position;
 import core.*;
-import customsprites.SolidPushSprite;
 
 public class Player extends Sprite
     implements KeySupport, TimeSupport, CollisionDetection, Boundable, Rideable {
@@ -108,7 +107,7 @@ public class Player extends Sprite
 	public void onBoundsExtended() {
 		/* signals player has died */
     System.out.println("The player has exceeded screen bounds.");
-		getWorld().ChangeWorldState(WorldState.Death);
+		getWorld().changeWorldState(WorldState.Death);
 	}
 	
 	/* (non-Javadoc)
@@ -116,7 +115,7 @@ public class Player extends Sprite
 	 */
 	public void onCollision(Sprite sprite) {
 		/* signals player has died */
-		getWorld().ChangeWorldState(WorldState.Death);
+		getWorld().changeWorldState(WorldState.Death);
 	}
 
 	/* Determines if the player has collided with an object
@@ -133,7 +132,7 @@ public class Player extends Sprite
       checkCollision();
     }
     if (centerPosition.getY() <= getWorld().WINNING_Y) {
-      getWorld().ChangeWorldState(WorldState.PartlyFinished);
+      getWorld().changeWorldState(WorldState.PartlyFinished);
       return;
     }
 	}

@@ -40,7 +40,7 @@ public class App extends BasicGame {
      */
     @Override
     public void keyPressed(int key, char c) {
-    	world.OnKeyPressed(key, c);
+    	world.onKeyPressed(key, c);
     }
     
     /** Update the game state for a frame.
