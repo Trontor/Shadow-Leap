@@ -16,11 +16,11 @@ public class Player extends Sprite
     implements KeySupport, TimeSupport, CollisionDetection, Boundable, Rideable {
 
   private int lives = 3;
-
   private final Position LIFE_COUNTER_POS = new Position(24, 744);
   private Image livesImage = null;
   private final float COUNTER_DISTANCE = 32;
-
+  private Driver driver = null;
+  private Position startPosition;
   public int getLives() {
     return lives;
   }
@@ -40,9 +40,9 @@ public class Player extends Sprite
     }
   }
 
-  private Driver currentlyDriving;
 	public Player(World spawnWorld, String imageSrc, Position centerPos){
 		super(spawnWorld, "base.Player", imageSrc, centerPos);
+    startPosition = centerPos;
     try {
       livesImage = new Image("assets/lives.png");
     } catch (SlickException e) {
@@ -63,12 +63,10 @@ public class Player extends Sprite
 
 	@Override
 	public void setLocation(Position center) {
-		if (currentlyDriving == null && futureOutOfBounds(center)) {
-			return;
-		} else if (super.outOfBounds()) {
-			onBoundsExtended();
-		}
     super.setLocation(center);
+    if (super.outOfBounds()) {
+      onBoundsExtended();
+    }
 	} 
 
 	/* Handles movement for player
@@ -78,7 +76,7 @@ public class Player extends Sprite
 		/* determine key press and set appropriate position offset */
 		float newX = centerPosition.getX();
 		float newY = centerPosition.getY();
-		float delta = super.getWidth();
+		float delta = App.TILE_SIZE;
 		switch(key) {
 			case Input.KEY_DOWN:
 				newY += delta;
@@ -100,12 +98,16 @@ public class Player extends Sprite
         return;
       }
     }
+    if (driver == null && futureOutOfBounds(newPos)) {
+      return;
+    }
 		setLocation(newPos);
 	}
 
 	@Override
 	public void onBoundsExtended() {
 		/* signals player has died */
+    System.out.println("The player has exceeded screen bounds.");
 		getWorld().ChangeWorldState(WorldState.Death);
 	}
 	
@@ -122,15 +124,28 @@ public class Player extends Sprite
 	 */
 
 	public void onTimeTick(int delta) {
-		if (currentlyDriving != null) {
-			return;
-		}
-        checkCollision();
-        if (centerPosition.getY() <= getWorld().WINNING_Y) {
-          getWorld().ChangeWorldState(WorldState.PartlyFinished);
-          return;
-        }
+    checkForDrivers();
+    if (driver == null || !driver.isRideable()){
+      if (driver != null && !driver.isRideable()){
+        System.out.format("%s is attached to %s but it is not ridable, collision checking...\n",
+                                                          getSpriteName(), driver.getSpriteName());
+      }
+      checkCollision();
+    }
+    if (centerPosition.getY() <= getWorld().WINNING_Y) {
+      getWorld().ChangeWorldState(WorldState.PartlyFinished);
+      return;
+    }
 	}
+
+	public void reset(){
+	  detachDriver();
+	  if (startPosition != null){
+	    System.out.println("Resetting sprite to "+ startPosition);
+	    setLocation(startPosition);
+    }
+
+  }
 
 	@Override
 	public boolean checkCollision(){
@@ -146,24 +161,6 @@ public class Player extends Sprite
   }
 
   @Override
-  public void detachDriver() {
-	    if (currentlyDriving == null)return;
-    System.out.println("Detached driver");
-    currentlyDriving.removeRider(this);
-    currentlyDriving = null;
-  }
-
-  @Override
-  public void attachDriver(Driver driver) {
-    if (currentlyDriving == driver) {
-    	return;
-    }
-    System.out.println("Attached new driver");
-    currentlyDriving = driver;
-    driver.onTouch(this);
-  }
-
-  @Override
   public void render(Graphics g) {
     super.render(g);
     if (livesImage == null)
@@ -175,5 +172,42 @@ public class Player extends Sprite
       imageY -= livesImage.getHeight()/2;
       g.drawImage(livesImage, imageX, imageY);
     }
+  }
+
+  @Override
+  public void checkForDrivers() {
+	  List<Sprite> drivers = this.getWorld().getIntersectingSprites(this).stream()
+                                                                  .filter(s-> s instanceof Driver)
+                                                                  .collect(Collectors.toList());
+    if (drivers.size() == 0){
+      if (driver != null){
+        detachDriver();
+      }
+      return;
+    }
+    if (driver != null && !drivers.contains(driver)) {
+      detachDriver();
+    }
+    Driver currentlyDriving = (Driver)drivers.get(0);
+    if (driver != currentlyDriving){
+      detachDriver();
+      attachDriver(currentlyDriving);
+    }
+  }
+
+  @Override
+  public void detachDriver() {
+	  if (driver == null)
+	    return;
+    System.out.println("Detached " + driver.getSpriteName() + " from " + this.getSpriteName());
+    driver.removeRider();
+    driver = null;
+  }
+
+  @Override
+  public void attachDriver(Driver driver) {
+	  System.out.println("Attached " + driver.getSpriteName() + " to " + this.getSpriteName());
+	  this.driver = driver;
+    driver.addRider(this);
   }
 }

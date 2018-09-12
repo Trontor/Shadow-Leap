@@ -19,7 +19,6 @@ public class BikeSprite extends Obstacle {
       Position centerPos, Velocity speedInfo) {
     super(spawnWorld, obstacleName, imageSrc, centerPos, speedInfo); 
     if (speedInfo.getHorizontal() < 0) {
-    	System.out.println("Reversed");
         reverseImage();
     }
   }

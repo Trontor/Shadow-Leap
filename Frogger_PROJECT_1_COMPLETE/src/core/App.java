@@ -17,7 +17,8 @@ public class App extends BasicGame {
     private static int NUM_WORLDS = 2;
     private static boolean keepRunning = true;
     private static World world;
-    private static int worldNum = 1;
+    private static int worldNum = 0;
+    public static int TILE_SIZE = 48;
     
     /**
      * Initializes the core.App class

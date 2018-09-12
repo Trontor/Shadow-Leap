@@ -37,6 +37,7 @@ public  class World {
 
 	/** A list of all Sprites currently on the world */
 	private List<Sprite> spriteMap;
+
 	private List<Sprite> getSpriteMap(){
 		return spriteMap;
 	} 
@@ -115,7 +116,6 @@ public  class World {
 		}
 		return lines;
 	}
-
 
 	private void loadAssets() {
 		spriteMap = new ArrayList<>();
@@ -199,22 +199,20 @@ public  class World {
 	 * @param state The state to change base.WorldState to
 	 */
 	public void ChangeWorldState(WorldState state) {
-		System.out.println("CHANGE WORLD STATE");
+		System.out.println("World State Changed: " + "Current State = " + state.toString());
 		switch(state) {
 			case Death:
 			  if (!player.removeLife()){
 			    App.CloseGame();
         } else {
-    		System.out.println("SETLOC");
-    		player.detachDriver();
-			    player.setLocation(PLAYER_START_POS);
+			    player.reset();
         }
 		  case Finished:
         /* to do: world switching */
         break;
 		  case PartlyFinished:
         Position winLocation = getClosestWinningPosition(player.getPosition());
-        player.setLocation(PLAYER_START_POS);
+        player.reset();
         spriteMap.add(new Obstacle(this, WIN_MARKER, "assets/frog.png", winLocation));
         if (checkWin()){
           App.nextWorld();
