@@ -70,18 +70,20 @@ public  class World {
 
 	/** Initialises a new core.World */
 	public World(int level) {
+
+		specialSprites.add("turtles");
+		specialSprites.add("bike");
+    specialSprites.add("bulldozer");
+
 		assetTypes.put("water", AssetType.PASSIVE_OBSTACLE);
 		assetTypes.put("grass", AssetType.FRIENDLY_TILE);
 		assetTypes.put("tree", AssetType.SOLID_TILE);
 		assetTypes.put("bus", AssetType.MOVING_OBSTACLE);
-		assetTypes.put("bulldozer", AssetType.MOVING_OBSTACLE);
+		assetTypes.put("bulldozer", AssetType.SOLID_TILE);
 		assetTypes.put("log", AssetType.DRIVER_OBJECT);
 		assetTypes.put("longlog", AssetType.DRIVER_OBJECT);
 		assetTypes.put("racecar", AssetType.MOVING_OBSTACLE);
 
-    specialSprites.add("turtles");
-    specialSprites.add("bike");
-		
 		speedInfo.put("bus", new Velocity(0.15f, 0));
 		speedInfo.put("bike", new Velocity(0.2f, 0));
 		speedInfo.put("bulldozer", new Velocity(0.05f, 0));
@@ -155,6 +157,9 @@ public  class World {
             break;
           case "bike":
             newSprite = new BikeSprite(this, assetName, imageSrc, spawnPos, newVelocity);
+            break;
+          case "bulldozer":
+            newSprite = new SolidPushSprite(this, assetName, imageSrc, spawnPos, newVelocity);
             break;
         }
       } else {

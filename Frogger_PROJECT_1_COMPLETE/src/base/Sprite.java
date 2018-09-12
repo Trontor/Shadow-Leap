@@ -8,7 +8,6 @@ import utilities.Position;
 import core.*;
 
 public class Sprite {
-	
 	/* specifies the hit box and visual bounds for the object */
 	private BoundingBox hitBox = null;
 	public BoundingBox getHitBox() {
@@ -39,7 +38,7 @@ public class Sprite {
 	
 	/* current world the player is on*/
 	private final World world;
-	World getWorld() {
+	public World getWorld() {
 		return world;
 	} 
 	
@@ -51,17 +50,17 @@ public class Sprite {
 
 	/* details the height and width of the base.Sprite based on its Image*/
 	private float height, width;
-	float getWidth() {
+	public float getWidth() {
 		return width;
 	}
-	float getHeight() {
+	public float getHeight() {
 		return height;
 	} 
 	 
 	/** Idenfies the (x,y) location of the bottom left pixel of the base.Sprite
 	 * @return new Position class with pre-set (x,y) anchor location
 	 */
-    private Position getLeftAnchor() {
+	private Position getLeftAnchor() {
 		float anchorX = centerPosition.getX() - width/2;
 		float anchorY = centerPosition.getY() - height/2;
 		return new Position(anchorX, anchorY);
@@ -70,7 +69,7 @@ public class Sprite {
 	/** Determines whether the sprite has completely exceeded the bounds of the screen 
 	 * @return True if out of bounds, False if inside bounds
 	 */
-    boolean outOfBounds() {
+	public boolean outOfBounds() {
 		boolean tooHigh = hitBox.getBottom() > App.SCREEN_HEIGHT;
 		boolean tooLow = hitBox.getTop() <  0;
 		boolean tooFarLeft = hitBox.getRight() < 0;
@@ -81,7 +80,7 @@ public class Sprite {
 	/** Change the location of the base.Sprite
 	 * @param centerLoc The position to center the base.Sprite around
 	 */
-    void setLocation(Position centerLoc) {
+  public void setLocation(Position centerLoc) {
 		centerPosition = centerLoc; 
 		hitBox.setX(centerLoc.getX());
 		hitBox.setY(centerLoc.getY());
