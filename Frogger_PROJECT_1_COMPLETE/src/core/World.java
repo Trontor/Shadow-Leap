@@ -35,11 +35,11 @@ public  class World {
 	private final List<Position> winningPositions = new ArrayList<>();
 	private final Position PLAYER_START_POS = new Position(512, 720);
 	private final String WIN_MARKER = "filledhole";
-  private final int EXTRA_LIFE_MIN_WAIT = 2;
-  private final int EXTRA_LIFE_MAX_WAIT = 3;
+  private final int EXTRA_LIFE_MIN_WAIT = 25;
+  private final int EXTRA_LIFE_MAX_WAIT = 35;
   private final int extraLifeSpawnTime;
   private boolean hasSpawnedExtraLife;
-  private int runTime = 0;
+  private int spawnExtraLifeTime = 0;
 
 	/** A list of all Sprites currently on the world */
 	private List<Sprite> spriteMap;
@@ -238,10 +238,10 @@ public  class World {
 	 * @param delta Time passed since last frame (milliseconds).
 	 */
 	public void update(Input input, int delta) {
-    runTime += delta;
-    if (!hasSpawnedExtraLife && runTime >= extraLifeSpawnTime){
-      SpawnExtraLife();
-      hasSpawnedExtraLife = true;
+    spawnExtraLifeTime += delta;
+    if (spawnExtraLifeTime >= extraLifeSpawnTime){
+      spawnExtraLife();
+      spawnExtraLifeTime = 0; 
     }
 		List<Sprite> timeSupportSprites = getSpriteMap().stream()
 													    .filter(s-> s instanceof TimeSupport)
@@ -301,7 +301,7 @@ public  class World {
     return i;
   }
 
-	private void SpawnExtraLife(){
+	private void spawnExtraLife(){
 	  List<Sprite> logs = getSpriteMap().stream().filter(s->s.getSpriteName().contains("log"))
         .collect(Collectors.toList());
     Sprite randomLog = logs.get(getRandomNumber(0,logs.size()-1));

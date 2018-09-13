@@ -18,8 +18,10 @@ import utilities.Position;
 public class PowerUp extends Sprite implements TimeSupport, Rideable, Collidable {
 
   private Driver driver = null;
+  private float deathTimer = 0;
   private float cumulativeDelta = 0;
   private final float MOVE_RATE = 2;
+  private final float DEATH_TIME = 14;
   private boolean moveRight= false;
 
   public PowerUp(World spawnWorld, String Name, String imageSrc,
@@ -52,6 +54,11 @@ public class PowerUp extends Sprite implements TimeSupport, Rideable, Collidable
   @Override
   public void onTimeTick(int delta) {
     cumulativeDelta += delta;
+    deathTimer += delta;
+    if (deathTimer/1000 > DEATH_TIME) {
+    	System.out.println("Deleted powerup. F F F F F");
+    	getWorld().removeSprite(this);
+    }
     if (cumulativeDelta/1000 <= MOVE_RATE){
       return;
     }
