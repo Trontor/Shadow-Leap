@@ -83,8 +83,8 @@ public class BoundingBox {
   }
 
   public boolean intersects(Position other) {
-    boolean belowTop = other.getY() < getTop();
-    boolean aboveBottom = other.getY() > getBottom();
+    boolean belowTop = other.getY() > getTop();
+    boolean aboveBottom = other.getY() < getBottom();
     boolean rightOfLeft = other.getX() > getLeft();
     boolean leftOfRight = other.getX() < getRight();
     return belowTop && aboveBottom && rightOfLeft && leftOfRight;

@@ -1,15 +1,21 @@
 package customsprites;
+import java.util.PrimitiveIterator.OfDouble;
+
+import org.lwjgl.Sys;
+import org.omg.CosNaming._BindingIteratorImplBase;
+
 import base.Driver;
+import base.Player;
 import base.Rideable;
 import base.Sprite;
+import base.Collidable;
 import base.TimeSupport;
 import base.Velocity;
 import core.App;
-import core.World;
-import javafx.geometry.Pos;
+import core.World; 
 import utilities.Position;
 
-public class PowerUp extends Sprite implements TimeSupport, Rideable {
+public class PowerUp extends Sprite implements TimeSupport, Rideable, Collidable {
 
   private Driver driver = null;
   private float cumulativeDelta = 0;
@@ -21,13 +27,19 @@ public class PowerUp extends Sprite implements TimeSupport, Rideable {
     super(spawnWorld, Name, imageSrc, centerPos);
   }
 
+  public void applyPowerUp(Sprite sprite) {
+	  if (sprite instanceof Player) {
+		  ((Player)sprite).addLife();
+	  }
+	  getWorld().removeSprite(this);
+  }
   @Override
   public void checkForDrivers() {}
 
   @Override
   public void detachDriver() {
     if (this.driver != null){
-      driver.removeRider();
+      driver.removeRider(this);
     }
   }
 
@@ -44,21 +56,38 @@ public class PowerUp extends Sprite implements TimeSupport, Rideable {
       return;
     }
     cumulativeDelta = 0;
-    Position newPos = moveRight ? shuffleRight(): shuffleLeft();
-    if (!driver.getHitBox().intersects(newPos)){
-      moveRight = !moveRight;
-      newPos = moveRight ? shuffleRight(): shuffleLeft();
-      System.out.println("Recalibrated");
-    }
-    System.out.format("Old Pos = %s, New Pos = %s, Hitbox = %s\n", getPosition(), newPos, driver.getHitBox());
-    setLocation(newPos);
+    if (moveRight) {
+    	if (!tryShuffleRight()) {
+    		moveRight = false;
+    		tryShuffleLeft();
+    	}
+    } else {
+    	if (!tryShuffleLeft()) {
+    		moveRight = true;
+    		tryShuffleRight();
+    	}
+    } 
   }
-  private Position shuffleRight(){
+  
+  private boolean tryShuffleRight(){
     float newX = getPosition().getX() + 1 * App.TILE_SIZE;
-    return new Position(newX, driver.getPosition().getY());
+    Position position = new Position(newX, driver.getPosition().getY());
+    boolean canMove = driver.getHitBox().intersects(position);
+    if (canMove) { 
+    	this.setLocation(position);
+    	return true;
+    } 
+	return false; 
   }
-  private Position shuffleLeft(){
-    float newX = getPosition().getX() - 1 * App.TILE_SIZE;
-    return new Position(newX, driver.getPosition().getY());
+  
+  private boolean tryShuffleLeft(){
+	  float newX = getPosition().getX() - 1 * App.TILE_SIZE;
+	    Position position = new Position(newX, driver.getPosition().getY());
+	    boolean canMove = driver.getHitBox().intersects(position);
+	    if (canMove) {
+	    	this.setLocation(position);
+	    	return true;
+	    } 
+		return false; 
   }
 }

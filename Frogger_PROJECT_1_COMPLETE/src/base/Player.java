@@ -3,6 +3,7 @@ package base;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.lwjgl.Sys;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
@@ -10,6 +11,7 @@ import org.newdawn.slick.SlickException;
 
 import utilities.Position;
 import core.*;
+import customsprites.PowerUp;
 
 public class Player extends Sprite
     implements KeySupport, TimeSupport, CollisionDetection, Boundable, Rideable {
@@ -20,8 +22,10 @@ public class Player extends Sprite
   private final float COUNTER_DISTANCE = 32;
   private Driver driver = null;
   private Position startPosition;
-  public int getLives() {
-    return lives;
+  public int getLives()  {  return lives; }
+  
+  public void addLife() {
+    lives++;
   }
 
   /**
@@ -115,7 +119,10 @@ public class Player extends Sprite
 	 */
 	public void onCollision(Sprite sprite) {
 		/* signals player has died */
-		getWorld().changeWorldState(WorldState.Death);
+		if ((driver == null || !driver.isRideable()) && sprite instanceof Obstacle){
+			System.out.println("Collided with " + sprite.getSpriteName());
+			getWorld().changeWorldState(WorldState.Death);			
+	    }
 	}
 
 	/* Determines if the player has collided with an object
@@ -123,18 +130,12 @@ public class Player extends Sprite
 	 */
 
 	public void onTimeTick(int delta) {
-    checkForDrivers();
-    if (driver == null || !driver.isRideable()){
-      if (driver != null && !driver.isRideable()){
-        System.out.format("%s is attached to %s but it is not ridable, collision checking...\n",
-                                                          getSpriteName(), driver.getSpriteName());
-      }
-      checkCollision();
-    }
-    if (centerPosition.getY() <= getWorld().WINNING_Y) {
-      getWorld().changeWorldState(WorldState.PartlyFinished);
-      return;
-    }
+		checkForDrivers();
+	    checkCollision();
+	    if (centerPosition.getY() <= getWorld().WINNING_Y) {
+	      getWorld().changeWorldState(WorldState.PartlyFinished);
+	      return;
+	    }
 	}
 
 	public void reset(){
@@ -143,7 +144,6 @@ public class Player extends Sprite
 	    System.out.println("Resetting sprite to "+ startPosition);
 	    setLocation(startPosition);
     }
-
   }
 
 	@Override
@@ -151,10 +151,15 @@ public class Player extends Sprite
     List<Sprite> collidableSprites = getWorld().getIntersectingSprites(this).stream()
         .filter(s -> s instanceof Collidable)
         .collect(Collectors.toList());
+    List<Sprite> powerUps = getWorld().getIntersectingSprites(this).stream()
+            .filter(s -> s instanceof PowerUp)
+            .collect(Collectors.toList());
+    for (Sprite powerUpSprite : powerUps) {
+		((PowerUp)powerUpSprite).applyPowerUp(this);
+    }
     if (collidableSprites.size() > 0) {
-      /* we are colliding */
-      onCollision(collidableSprites.get(0));
-      return true;
+    	/* only care about colliding with first sprite, otherwise multiple deaths*/
+    	onCollision(collidableSprites.get(0)); 	
     }
     return false;
   }
@@ -199,7 +204,7 @@ public class Player extends Sprite
 	  if (driver == null)
 	    return;
     System.out.println("Detached " + driver.getSpriteName() + " from " + this.getSpriteName());
-    driver.removeRider();
+    driver.removeRider(this);
     driver = null;
   }
 

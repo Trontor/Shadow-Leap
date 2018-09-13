@@ -40,7 +40,7 @@ public class MovingSprite extends Sprite implements TimeSupport {
 	/** Uses modulo arithmetic and error management to respawn the object 
 	 * at the appropriate point (regardless of velocity).
 	 */
-	private void respawn() { 
+	public void respawn() { 
 		/* Variables to hold transformations to find new spawn location */
 		float roundedX = centerPosition.getX();
 		float roundedY = centerPosition.getY();
@@ -77,10 +77,7 @@ public class MovingSprite extends Sprite implements TimeSupport {
 			}
 		}
 		/* returns, logs, and sets the new position */
-		Position newPos = new Position(newX, newY);
-		if (super.getSpriteName().equals("longlog")) {
-			//System.out.format("[Respawn] Respawning %s of width %s at %s\n", super.getSpriteName(), super.getWidth(), newPos);
-		}
+		Position newPos = new Position(newX, newY); 
 		setLocation(newPos);
 	}
 

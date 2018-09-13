@@ -1,5 +1,5 @@
 package base;
 
 /* marker interface */
-interface Collidable {
+public interface Collidable {
 }
