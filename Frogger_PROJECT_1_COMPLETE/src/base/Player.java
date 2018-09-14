@@ -99,8 +99,8 @@ public class Player extends Sprite
         break;
     }
     Position newPos = new Position(newX, newY);
-    for (Sprite s : super.getWorld().getSpritesAt(newPos)) {
-      if (getWorld().getAssetType(s.getSpriteName()) == AssetType.SOLID_TILE) {
+    for (Sprite s : super.getWorld().spriteManager.getSpritesAt(newPos)) {
+      if (getWorld().spriteManager.getAssetType(s.getSpriteName()) == AssetType.SOLID_TILE) {
         log.info(
             String.format("Intersection with %s which is a solid, can't move.", s.getSpriteName()));
         return;
@@ -142,28 +142,16 @@ public class Player extends Sprite
     }
   }
 
-  public void reset() {
-    detachDriver();
-    if (startPosition != null) {
-      log.info("Resetting sprite to " + startPosition);
-      setLocation(startPosition);
-    }
-  }
-
   @Override
   public void checkCollision() {
     List<Sprite> collidableSprites =
         getWorld()
+            .spriteManager
             .getIntersectingSprites(this)
             .stream()
             .filter(s -> s instanceof Collidable)
             .collect(Collectors.toList());
-    List<Sprite> powerUps =
-        getWorld()
-            .getIntersectingSprites(this)
-            .stream()
-            .filter(s -> s instanceof PowerUp)
-            .collect(Collectors.toList());
+    List<Sprite> powerUps = getWorld().spriteManager.getIntersectingSprites(this, s-> s instanceof PowerUp);
     for (Sprite powerUpSprite : powerUps) {
       ((PowerUp) powerUpSprite).applyPowerUp(this);
     }
@@ -190,6 +178,7 @@ public class Player extends Sprite
   public void checkForDrivers() {
     List<Sprite> drivers =
         this.getWorld()
+            .spriteManager
             .getIntersectingSprites(this)
             .stream()
             .filter(s -> s instanceof Driver)

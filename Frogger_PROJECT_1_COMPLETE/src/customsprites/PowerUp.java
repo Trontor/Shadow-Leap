@@ -31,7 +31,7 @@ public class PowerUp extends Sprite implements TimeSupport, Rideable, Collidable
     if (sprite instanceof Player) {
       ((Player) sprite).addLife();
     }
-    getWorld().removeSprite(this);
+    getWorld().spriteManager.removeSprite(this);
   }
 
   @Override
@@ -56,7 +56,7 @@ public class PowerUp extends Sprite implements TimeSupport, Rideable, Collidable
     deathTimer += delta;
     if (deathTimer / 1000 > DEATH_TIME) {
       log.info("Deleted powerup. F F F F F");
-      getWorld().removeSprite(this);
+      getWorld().spriteManager.removeSprite(this);
     }
     if (cumulativeDelta / 1000 <= MOVE_RATE) {
       return;
