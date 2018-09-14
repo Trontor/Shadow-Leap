@@ -17,11 +17,12 @@ import utilities.Position;
 
 public class PowerUp extends Sprite implements TimeSupport, Rideable, Collidable {
 
+  private final float MOVE_RATE = 2;
+  private final float DEATH_TIME = 14;
+  
   private Driver driver = null;
   private float deathTimer = 0;
   private float cumulativeDelta = 0;
-  private final float MOVE_RATE = 2;
-  private final float DEATH_TIME = 14;
   private boolean moveRight= false;
 
   public PowerUp(World spawnWorld, String Name, String imageSrc,
