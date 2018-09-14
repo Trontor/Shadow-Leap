@@ -1,5 +1,5 @@
 package base;
 
-/* marker interface */
+/* marker interface representing objects that can be interacted with*/
 public interface Collidable {
 }

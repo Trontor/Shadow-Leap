@@ -13,8 +13,15 @@ import utilities.Position;
 import core.*;
 import customsprites.PowerUp;
 
+/**
+ * A Sprite that can be controlled by the user, is bound by the screen, can ride on Driver objects,
+ * and can collide with objects that implement Collidable
+ *
+ * @author Rohyl Joshi
+ * @see <a href="github.com/Trontor">Hosted on GitHub</a>
+ */
 public class Player extends Sprite
-    implements KeySupport, TimeSupport, CollisionDetection, Boundable, Rideable {
+    implements KeySupport, TimeSupport, CollisionDetection, ScreenBoundable, Rideable {
 
   private final Position LIFE_COUNTER_POS = new Position(24, 744);
   private final float COUNTER_DISTANCE = 32;
@@ -24,11 +31,28 @@ public class Player extends Sprite
   private Driver driver;
   private Position startPosition;
 
+  public Player(World spawnWorld, String imageSrc, Position centerPos) {
+    super(spawnWorld, "base.Player", imageSrc, centerPos);
+    startPosition = centerPos;
+    try {
+      livesImage = new Image("assets/lives.png");
+    } catch (SlickException e) {
+      e.printStackTrace();
+    }
+  }
+
+  /**
+   * Gets the number of lives left for the Player
+   *
+   * @return Integer value of number of lives left
+   */
   public int getLives() {
     return lives;
   }
 
+  /** Increments the number of lives left for the Player */
   public void addLife() {
+    log.info("Lives left = " + lives);
     lives++;
   }
 
@@ -47,17 +71,13 @@ public class Player extends Sprite
     }
   }
 
-  public Player(World spawnWorld, String imageSrc, Position centerPos) {
-    super(spawnWorld, "base.Player", imageSrc, centerPos);
-    startPosition = centerPos;
-    try {
-      livesImage = new Image("assets/lives.png");
-    } catch (SlickException e) {
-      e.printStackTrace();
-    }
-  }
-
-  private boolean futureOutOfBounds(Position futurePos) {
+  /**
+   * Determines whether the Position given is out of the screen bounds
+   *
+   * @param futurePos The Position to check
+   * @return True if the Position is out of bounds, else False
+   */
+  private boolean checkOutOfBounds(Position futurePos) {
     float offset = super.getWidth() / 2;
     float rightX = futurePos.getX() + offset;
     float leftX = futurePos.getX() - offset;
@@ -66,14 +86,6 @@ public class Player extends Sprite
     float maxX = App.SCREEN_WIDTH;
     float maxY = App.SCREEN_HEIGHT;
     return rightX > maxX || leftX < 0 || topY > maxY || bottomY < 0;
-  }
-
-  @Override
-  public void setLocation(Position center) {
-    super.setLocation(center);
-    if (super.outOfBounds()) {
-      onBoundsExtended();
-    }
   }
 
   /* Handles movement for player
@@ -106,22 +118,18 @@ public class Player extends Sprite
         return;
       }
     }
-    if (driver == null && futureOutOfBounds(newPos)) {
+    if (driver == null && checkOutOfBounds(newPos)) {
       return;
     }
     setLocation(newPos);
   }
 
-  @Override
-  public void onBoundsExtended() {
-    /* signals player has died */
-    log.info("The player has exceeded screen bounds.");
-    getWorld().changeWorldState(WorldState.Death);
-  }
 
-  /* (non-Javadoc)
-   * @see base.CollisionDetection#onCollision(base.Sprite)
-   */
+    /**
+     * Event raised when Player has collided with a Sprite object that implements Collidable
+     * Special logic checking to account for if the Player is currently riding
+     * @param sprite The sprite to check
+     */
   public void onCollision(Sprite sprite) {
     /* signals player has died */
     if ((driver == null || !driver.isRideable()) && sprite instanceof Obstacle) {
@@ -130,10 +138,25 @@ public class Player extends Sprite
     }
   }
 
+  @Override
+  public void onScreenBoundsExtended() {
+    /* signals player has died */
+    log.info("The player has exceeded screen bounds.");
+    getWorld().changeWorldState(WorldState.Death);
+  }
+
+  @Override
+  public void setLocation(Position center) {
+    super.setLocation(center);
+    if (super.outOfBounds()) {
+      onScreenBoundsExtended();
+    }
+  }
+
   /* Determines if the player has collided with an object
    * @see base.TimeSupport#onTimeTick(int)
    */
-
+  @Override
   public void onTimeTick(int delta) {
     checkForDrivers();
     checkCollision();
@@ -151,7 +174,8 @@ public class Player extends Sprite
             .stream()
             .filter(s -> s instanceof Collidable)
             .collect(Collectors.toList());
-    List<Sprite> powerUps = getWorld().spriteManager.getIntersectingSprites(this, s-> s instanceof PowerUp);
+    List<Sprite> powerUps =
+        getWorld().spriteManager.getIntersectingSprites(this, s -> s instanceof PowerUp);
     for (Sprite powerUpSprite : powerUps) {
       ((PowerUp) powerUpSprite).applyPowerUp(this);
     }

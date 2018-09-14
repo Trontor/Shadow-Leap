@@ -14,9 +14,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import utilities.Position;
 
-/**
- * A wrapper class that encapsulates all the sprites and events for a specified level.
- */
+/** A wrapper class that encapsulates all the sprites and events for a specified level. */
 public class World {
   /* constants that describe the world*/
   public final LevelAssetManager spriteManager;
