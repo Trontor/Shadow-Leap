@@ -3,10 +3,7 @@ package customsprites;
 import base.Obstacle;
 import base.Velocity;
 import core.World;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.lwjgl.Sys;
 import org.newdawn.slick.Image;
 
 import utilities.Position;

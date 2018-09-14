@@ -20,7 +20,7 @@ public class Position {
 		this.y = y;
 	}
 
-	public float DistanceTo(Position compare) {
+	public float distanceTo(Position compare) {
 		float deltaX = compare.getX()-this.getX();
 		float deltaY = compare.getY()-this.getY();
 		return (float)Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));

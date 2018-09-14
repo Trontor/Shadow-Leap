@@ -6,7 +6,7 @@ import core.*;
 public class MovingSprite extends Sprite implements TimeSupport {
 	private final float RESPAWN_PADDING = 0.47f;
 
-	private Velocity movementVelocity = new Velocity(0, 0);
+	private Velocity movementVelocity;
 
 	public Velocity getMovementVelocity() {
 		return movementVelocity;

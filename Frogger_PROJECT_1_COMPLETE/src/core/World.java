@@ -9,6 +9,10 @@ import base.Sprite;
 import base.TimeSupport;
 import base.Velocity;
 import base.WorldState;
+import customsprites.BikeSprite;
+import customsprites.PowerUp;
+import customsprites.SolidPushSprite;
+import customsprites.TurtleSprite;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -23,20 +27,20 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
-
 import utilities.Position;
-import customsprites.*;
 
 public class World {
 
   private final int LEVEL;
-  public final float WINNING_Y = 48;
   private final Position PLAYER_START_POS = new Position(512, 720);
   private final String WIN_MARKER = "filledhole";
+  public final float WINNING_Y = 48;
+  private final int WINNING_X_START = 120;
+  private final int WINNING_X_SEPARATION = 192;
   private final int EXTRA_LIFE_MIN_WAIT = 25;
   private final int EXTRA_LIFE_MAX_WAIT = 35;
 
-  private Logger log = Logger.getLogger(getClass().getName());
+  private Logger log = Logger.getLogger(getClass().getSimpleName());
   private Player player;
   private final Map<String, AssetType> assetTypes = new HashMap<>();
   private final List<String> specialSprites = new ArrayList<>();
@@ -47,16 +51,24 @@ public class World {
 
   /** A list of all Sprites currently on the world */
   private List<Sprite> spriteMap;
-
+  /**
+   * Gets list of sprites.
+   * @return ArrayList of Sprites currently on the map
+   */
   private List<Sprite> getSpriteMap() {
     return spriteMap;
   }
 
-  private Position getClosestWinningPosition(Position location) {
+  /**
+   * Gets the center Position of the closest hole.
+   * @param location Position to search for closest hole near to
+   * @return Position representing the center of the closest 'hole'
+   */
+  private Position getClosestHolePosition(Position location) {
     Position returnPos = winningPositions.get(0);
-    float closest = location.DistanceTo(returnPos);
+    float closest = location.distanceTo(returnPos);
     for (Position possiblePosition : winningPositions) {
-      float distance = location.DistanceTo(possiblePosition);
+      float distance = location.distanceTo(possiblePosition);
       if (distance < closest) {
         closest = distance;
         returnPos = possiblePosition;
@@ -65,6 +77,10 @@ public class World {
     return returnPos;
   }
 
+  /**
+   * Checks if all holes have been filled.
+   * @return True if all holes have been filled, else False
+   */
   private boolean checkWin() {
     for (Position winningPos : winningPositions) {
       boolean holeFilled = false;
@@ -73,17 +89,19 @@ public class World {
           holeFilled = true;
         }
       }
-      if (holeFilled == false) return false;
+      if (!holeFilled)
+        return false;
     }
     return true;
   }
 
   /** Initialises a new core.World */
   public World(int level) {
+    /* Keeps all assets with specialised behaviour separately */
     specialSprites.add("turtles");
     specialSprites.add("bike");
     specialSprites.add("bulldozer");
-
+    /* Labels all the assets in the game with basic behaviour*/
     assetTypes.put("water", AssetType.PASSIVE_OBSTACLE);
     assetTypes.put("grass", AssetType.FRIENDLY_TILE);
     assetTypes.put("tree", AssetType.SOLID_TILE);
@@ -92,7 +110,7 @@ public class World {
     assetTypes.put("log", AssetType.DRIVER_OBJECT);
     assetTypes.put("longlog", AssetType.DRIVER_OBJECT);
     assetTypes.put("racecar", AssetType.MOVING_OBSTACLE);
-
+    /* Labels all moving objects with their movement velocities */
     speedInfo.put("bus", new Velocity(0.15f, 0));
     speedInfo.put("bike", new Velocity(0.2f, 0));
     speedInfo.put("bulldozer", new Velocity(0.05f, 0));
@@ -100,28 +118,30 @@ public class World {
     speedInfo.put("longlog", new Velocity(0.07f, 0));
     speedInfo.put("racecar", new Velocity(0.5f, 0));
     speedInfo.put("turtles", new Velocity(0.085f, 0));
-
-    winningPositions.add(new Position(120, WINNING_Y));
-    winningPositions.add(new Position(312, WINNING_Y));
-    winningPositions.add(new Position(504, WINNING_Y));
-    winningPositions.add(new Position(696, WINNING_Y));
-    winningPositions.add(new Position(888, WINNING_Y));
-
-    this.LEVEL = level;
+    /* Stores Position of all holes to be filled */
+    for (int x = WINNING_X_START; x < App.SCREEN_WIDTH; x += WINNING_X_SEPARATION){
+      winningPositions.add(new Position(x, WINNING_Y));
+    }
+    LEVEL = level;
     loadAssets();
     addPlayer();
     extraLifeSpawnTime = getRandomNumber(EXTRA_LIFE_MIN_WAIT, EXTRA_LIFE_MAX_WAIT) * 1000;
   }
 
+  /**
+   * Parses the lines of the appropriate level file
+   * @return A list of lines in the file (needs more processing)
+   */
   private List<String> readAssets() {
+    String relFilePath = "assets/levels/%d.lvl";
     List<String> lines = new ArrayList<>();
-    File file = new File(String.format("assets/levels/%d.lvl", LEVEL));
+    File file = new File(String.format(relFilePath, LEVEL));
     try (Scanner sc = new Scanner(file)) {
       while (sc.hasNextLine()) {
         lines.add(sc.nextLine());
       }
     } catch (FileNotFoundException e) {
-      e.printStackTrace();
+      log.log(Level.SEVERE, String.format("Level file: %s does not exist.\n", relFilePath));
     }
     return lines;
   }
@@ -129,7 +149,6 @@ public class World {
   private void loadAssets() {
     spriteMap = new ArrayList<>();
     List<String> assets = readAssets();
-    float maxHeight = App.SCREEN_HEIGHT;
     for (String line : assets) {
       String[] assetInfo = line.split(",");
       String assetName = assetInfo[0].toLowerCase();
@@ -140,7 +159,7 @@ public class World {
       if (assetTypes.containsKey(assetName)) {
         assetType = assetTypes.get(assetName);
       } else if (!specialSprites.contains(assetName)) {
-    	  log.log(Level.WARNING"Tried to load unknown asset type: " + assetName);
+    	  log.log(Level.WARNING, "Tried to load unknown asset type: " + assetName);
         continue;
       }
       Sprite newSprite = null;
@@ -172,6 +191,7 @@ public class World {
             break;
         }
       } else {
+        assert assetType != null;
         switch (assetType) {
           case MOVING_OBSTACLE:
             newSprite = new Obstacle(this, assetName, imageSrc, spawnPos, newVelocity);
@@ -197,15 +217,11 @@ public class World {
   /** Adds all the players to the base.Sprite Map */
   private void addPlayer() {
     player = new Player(this, "assets/frog.png", PLAYER_START_POS);
-    if (player != null) {
-      spriteMap.add(player);
-    }
+    spriteMap.add(player);
   }
 
   public void removeSprite(Sprite sprite) {
-    if (spriteMap.contains(sprite)) {
-      spriteMap.remove(sprite);
-    }
+    spriteMap.remove(sprite);
   }
 
   /**
@@ -226,7 +242,7 @@ public class World {
         /* to do: world switching */
         break;
       case PartlyFinished:
-        Position winLocation = getClosestWinningPosition(player.getPosition());
+        Position winLocation = getClosestHolePosition(player.getPosition());
         player.reset();
         spriteMap.add(new Obstacle(this, WIN_MARKER, "assets/frog.png", winLocation));
         if (checkWin()) {
@@ -238,7 +254,7 @@ public class World {
   /**
    * Utilises the power of lambda expressions for quick filtering
    *
-   * @param predicate
+   * @param predicate the boolean expression to evaluate on search
    */
   public List<Sprite> filterSprites(Predicate<Sprite> predicate) {
     return getSpriteMap().stream().filter(predicate).collect(Collectors.toList());

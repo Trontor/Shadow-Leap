@@ -1,6 +1,5 @@
 package customsprites;
 
-import base.Driver;
 import base.MovingSprite;
 import base.Rideable;
 import base.Sprite;

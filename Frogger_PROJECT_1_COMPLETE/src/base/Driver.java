@@ -4,11 +4,13 @@ import core.App;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import utilities.Position;
 import core.World;
 
 public class Driver extends MovingSprite {
 
+  private Logger log = Logger.getLogger(getClass().getSimpleName());
   private List<Sprite> ridingSprites;
   private boolean rideable = true;
 
@@ -66,7 +68,7 @@ public class Driver extends MovingSprite {
 
   public void addRider(Rideable rider) {
     if (!(rider instanceof Sprite)) {
-      System.out.println("Cannot add rider because it is not of type Sprite");
+      log.info("Cannot add rider because it is not of type Sprite");
       return;
     }
     ridingSprites.add((Sprite) rider);
@@ -74,9 +76,7 @@ public class Driver extends MovingSprite {
   }
 
   public void removeRider(Rideable rider) {
-    if (!(rider instanceof Rideable)) {
-      // this shouldn't happen
-    } else if (ridingSprites.contains(rider)) {
+    if (rider instanceof Sprite) {
       ridingSprites.remove(rider);
     }
   }

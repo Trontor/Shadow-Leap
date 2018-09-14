@@ -87,10 +87,8 @@ public class Sprite {
 		centerPosition = centerLoc; 
 		hitBox.setX(centerLoc.getX());
 		hitBox.setY(centerLoc.getY());
-		if (outOfBounds()) {
-			//System.out.format("[OutOfBounds] %s at %s\n", spriteName, centerLoc);
-		}
-	}  
+		outOfBounds();
+	}
 	
 	void setLocationDelta(float deltaX, float deltaY) {
 		float newX = centerPosition.getX() + deltaX;
@@ -106,7 +104,7 @@ public class Sprite {
 	 * @param centerPos The location to spawn the base.Sprite at
 	 */
 	public Sprite(World spawnWorld, String Name, String imageSrc, Position centerPos) {
-		this.centerPosition = new Position(App.SCREEN_WIDTH/2, App.SCREEN_HEIGHT/2);
+		this.centerPosition = new Position(App.SCREEN_WIDTH/2f, App.SCREEN_HEIGHT/2f);
 		this.world = spawnWorld;
 		spriteName = Name;		 
 		setImage(imageSrc); 

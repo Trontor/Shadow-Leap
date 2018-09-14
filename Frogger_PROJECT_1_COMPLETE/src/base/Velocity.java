@@ -30,9 +30,9 @@ public class Velocity {
 		return new Velocity(-1/magnitude * horizontal, -1/magnitude * vertical);
 	}
 	
-	public Velocity(float xVelocity, float yVelocity) {
-		horizontal = xVelocity;
-		vertical = yVelocity;
+	public Velocity(float xSpeed, float ySpeed) {
+		horizontal = xSpeed;
+		vertical = ySpeed;
 	}
 
 	@Override
