@@ -1,5 +1,6 @@
 package base;
 
+import javafx.geometry.Pos;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 
@@ -132,7 +133,7 @@ public class Sprite {
    *
    * @return new Position class with pre-set (x,y) anchor location
    */
-  private Position getLeftAnchor() {
+  public Position getLeftAnchor() {
     float anchorX = centerPosition.getX() - width / 2;
     float anchorY = centerPosition.getY() - height / 2;
     return new Position(anchorX, anchorY);
@@ -196,7 +197,7 @@ public class Sprite {
     return obj.toString().equals(this.toString());
   }
 
-  /* Returns the name of the base.Sprite as the String representation of the base.Sprite
+  /* Returns the name of the Sprite as the String representation of the Sprite
    * @see java.lang.Object#toString()
    */
   @Override

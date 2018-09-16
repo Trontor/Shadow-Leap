@@ -20,7 +20,7 @@ public class App extends BasicGame {
   private static int NUM_WORLDS = 2;
   private static boolean keepRunning = true;
   private static World world;
-  private static int currWorldNum = 0;
+  private static int currWorldNum =0;
 
   /** Initializes the core.App class */
   public App() {

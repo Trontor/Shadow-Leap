@@ -5,9 +5,7 @@ import base.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Predicate;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import customsprites.PowerUp;
 import org.newdawn.slick.Graphics;
@@ -17,7 +15,7 @@ import utilities.Position;
 /** A wrapper class that encapsulates all the sprites and events for a specified level. */
 public class World {
   /* constants that describe the world*/
-  public final LevelAssetManager spriteManager;
+  public final AssetManager spriteManager;
   public final int WINNING_Y = 48;
   private final String WIN_MARKER = "filledhole";
   private final int EXTRA_LIFE_MIN_WAIT = 25;
@@ -31,7 +29,7 @@ public class World {
 
   /** Initialises a new core.World */
   public World(int level) {
-    spriteManager = new LevelAssetManager(this, level);
+    spriteManager = new AssetManager(this, level);
     spriteManager.loadAssets();
     /* stores Position of all holes to be filled */
     for (int x = WINNING_X_START; x < App.SCREEN_WIDTH; x += WINNING_X_SEPARATION) {
@@ -69,16 +67,18 @@ public class World {
         } else {
           spriteManager.resetPlayer();
         }
+        break;
       case Finished:
-        /* to do: world switching */
+        App.nextWorld();
         break;
       case PartlyFinished:
         Position winLocation = getClosestHolePosition(spriteManager.getPlayer().getPosition());
         spriteManager.resetPlayer();
-        spriteManager.addSprite(new Obstacle(this, WIN_MARKER, "assets/frog.png", winLocation));
+        spriteManager.addFauxPlayer(WIN_MARKER, winLocation);
         if (checkWin()) {
-          App.nextWorld();
+          changeWorldState(WorldState.Finished);
         }
+        break;
     }
   }
 
@@ -114,18 +114,10 @@ public class World {
           holeFilled = true;
         }
       }
-      if (!holeFilled) return false;
+      if (!holeFilled)
+        return false;
     }
     return true;
-  }
-
-  /**
-   * Utilises the power of lambda expressions for quick filtering
-   *
-   * @param predicate the boolean expression to evaluate on search
-   */
-  public List<Sprite> filterSprites(Predicate<Sprite> predicate) {
-    return spriteManager.getSpriteMap().stream().filter(predicate).collect(Collectors.toList());
   }
 
   /** Randomises the spawn time for the next Extra Life power-up */
@@ -138,7 +130,7 @@ public class World {
    * Spawns an Extra Life power-up on a random log that grants a player an extra life on collision
    */
   private void spawnExtraLife() {
-    List<Sprite> logs = filterSprites(s -> s.getSpriteName().contains("log"));
+    List<Sprite> logs = spriteManager.filterSprites(s -> s.getSpriteName().contains("log"));
     Sprite randomLog = logs.get(getRandomNumber(0, logs.size() - 1));
     PowerUp extraLife =
         new PowerUp(this, "extralife", "assets/extralife.png", randomLog.getPosition());
@@ -160,7 +152,7 @@ public class World {
       spawnExtraLife();
       extraLifeTimeDelta = 0;
     }
-    List<Sprite> timeSupportSprites = filterSprites(s -> s instanceof TimeSupport);
+    List<Sprite> timeSupportSprites = spriteManager.filterSprites(s -> s instanceof TimeSupport);
     for (Sprite s : timeSupportSprites) {
       ((TimeSupport) s).onTimeTick(delta);
     }
@@ -173,7 +165,7 @@ public class World {
    * @param c Java character representation of pressed key
    */
   public void onKeyPressed(int key, char c) {
-    List<Sprite> keySupportSprites = filterSprites(s -> s instanceof KeySupport);
+    List<Sprite> keySupportSprites = spriteManager.filterSprites(s -> s instanceof KeySupport);
     for (Sprite s : keySupportSprites) {
       ((KeySupport) s).onKeyPress(key, c);
     }

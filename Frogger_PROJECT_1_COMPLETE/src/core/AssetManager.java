@@ -2,8 +2,8 @@ package core;
 
 import base.*;
 import customsprites.BikeSprite;
+import customsprites.MagicianSprite;
 import customsprites.SolidPushSprite;
-import customsprites.TurtleSprite;
 import utilities.Position;
 
 import java.nio.file.*;
@@ -16,10 +16,10 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
- * Helper class that reads, parses, and categorieses assets for a given level.
- * All generates Sprites are stored in a list referred to as the 'Sprite Map'
+ * Helper class that reads, parses, and categorieses assets for a given level. All generates Sprites
+ * are stored in a list referred to as the 'Sprite Map'
  */
-public class LevelAssetManager {
+public class AssetManager {
   private static final String ASSET_ROOT = "assets";
   private static final String LEVELS_ROOT = "levels";
   private static final String PLAYER_ASSET_NAME = "frog";
@@ -35,7 +35,7 @@ public class LevelAssetManager {
   private List<Sprite> spriteMap;
   private World world;
 
-  public LevelAssetManager(World world, int level) {
+  public AssetManager(World world, int level) {
     /* keeps all assets with specialised behaviour separately */
     specialSprites.add("turtles");
     specialSprites.add("bike");
@@ -85,6 +85,15 @@ public class LevelAssetManager {
   }
 
   /**
+   * Utilises the power of lambda expressions for quick filtering
+   *
+   * @param predicate the boolean expression to evaluate on search
+   */
+  public List<Sprite> filterSprites(Predicate<Sprite> predicate) {
+    return getSpriteMap().stream().filter(predicate).collect(Collectors.toList());
+  }
+
+  /**
    * Gets all the sprites whose hitbox intersects at point
    *
    * @param pos The point to check intersection at
@@ -106,10 +115,7 @@ public class LevelAssetManager {
    * @return A list of Sprites
    */
   public List<Sprite> getIntersectingSprites(Sprite sprite) {
-    return getSpriteMap()
-        .stream()
-        .filter(s -> s != sprite && s.getHitBox().intersects(sprite.getHitBox()))
-        .collect(Collectors.toList());
+    return filterSprites(s -> s != sprite && s.getHitBox().intersects(sprite.getHitBox()));
   }
 
   /**
@@ -130,6 +136,9 @@ public class LevelAssetManager {
    */
   public void addSprite(Sprite newSprite) {
     spriteMap.add(newSprite);
+  }
+  public void addFauxPlayer(String fauxName, Position pos) {
+    addSprite(new Obstacle(world, fauxName, getAssetPath(PLAYER_ASSET_NAME), pos));
   }
 
   /**
@@ -198,12 +207,12 @@ public class LevelAssetManager {
           newVelocity = speedInfo.get(assetName);
         }
         moveRight = Boolean.parseBoolean(assetInfo[3]);
-        newVelocity = new Velocity((moveRight ? 1 : -1) * newVelocity.getHorizontal(), 0);
+        newVelocity = new Velocity((moveRight ? 1 : -1) * newVelocity.getHorizontal(), newVelocity.getVertical());
       }
       if (specialSprites.contains(assetName)) {
         switch (assetName) {
           case "turtles":
-            newSprite = new TurtleSprite(world, assetName, imageSrc, spawnPos, newVelocity);
+            newSprite = new MagicianSprite(world, assetName, imageSrc, spawnPos, newVelocity);
             break;
           case "bike":
             newSprite = new BikeSprite(world, assetName, imageSrc, spawnPos, newVelocity);

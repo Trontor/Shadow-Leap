@@ -9,6 +9,10 @@ import java.util.List;
 
 import utilities.Position;
 
+/**
+ * Represents a Sprite that pushes any other Sprite it makes contact with in its direction of
+ * motion.
+ */
 public class SolidPushSprite extends MovingSprite {
 
   public SolidPushSprite(
@@ -16,6 +20,10 @@ public class SolidPushSprite extends MovingSprite {
     super(spawnWorld, Name, imageSrc, centerPos, velocity);
   }
 
+  /**
+   * Override method to handle pushing logic
+   * @param delta The time (in ms) since the last update
+   */
   @Override
   public void onTimeTick(int delta) {
     List<Sprite> intersectingSprites =

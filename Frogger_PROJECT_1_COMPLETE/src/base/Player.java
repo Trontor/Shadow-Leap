@@ -29,11 +29,9 @@ public class Player extends Sprite
   private int lives = 3;
   private Image livesImage;
   private Driver driver;
-  private Position startPosition;
 
   public Player(World spawnWorld, String imageSrc, Position centerPos) {
     super(spawnWorld, "base.Player", imageSrc, centerPos);
-    startPosition = centerPos;
     try {
       livesImage = new Image("assets/lives.png");
     } catch (SlickException e) {
@@ -124,12 +122,12 @@ public class Player extends Sprite
     setLocation(newPos);
   }
 
-
-    /**
-     * Event raised when Player has collided with a Sprite object that implements Collidable
-     * Special logic checking to account for if the Player is currently riding
-     * @param sprite The sprite to check
-     */
+  /**
+   * Event raised when Player has collided with a Sprite object that implements Collidable Special
+   * logic checking to account for if the Player is currently riding
+   *
+   * @param sprite The sprite to check
+   */
   public void onCollision(Sprite sprite) {
     /* signals player has died */
     if ((driver == null || !driver.isRideable()) && sprite instanceof Obstacle) {
@@ -168,12 +166,7 @@ public class Player extends Sprite
   @Override
   public void checkCollision() {
     List<Sprite> collidableSprites =
-        getWorld()
-            .spriteManager
-            .getIntersectingSprites(this)
-            .stream()
-            .filter(s -> s instanceof Collidable)
-            .collect(Collectors.toList());
+        getWorld().spriteManager.getIntersectingSprites(this, s -> s instanceof Collidable);
     List<Sprite> powerUps =
         getWorld().spriteManager.getIntersectingSprites(this, s -> s instanceof PowerUp);
     for (Sprite powerUpSprite : powerUps) {

@@ -6,18 +6,26 @@ import core.World;
 import org.newdawn.slick.Graphics;
 import utilities.Position;
 
-public class TurtleSprite extends Driver {
+/**
+ * Represents a Sprite that can disappear and reappear
+ */
+public class MagicianSprite extends Driver {
 
-  private boolean visible = true;
+  /* Characteristics and default values */
   private final float VISIBLE_TIME = 7;
   private final float HIDDEN_TIME = 2;
+  private boolean visible = true;
   private float currentTime = 0;
 
-  public TurtleSprite(World spawnWorld, String Name, String imageSrc, Position centerPos,
+  public MagicianSprite(World spawnWorld, String Name, String imageSrc, Position centerPos,
       Velocity velocity) {
     super(spawnWorld, Name, imageSrc, centerPos, velocity);
   }
 
+  /**
+   * Override method that handles the visibility switching of the Sprite
+   * @param delta The time in milliseconds since the last tick
+   */
   @Override
   public void onTimeTick(int delta) {
     currentTime += (float)delta/1000;
@@ -33,6 +41,10 @@ public class TurtleSprite extends Driver {
     super.onTimeTick(delta);
   }
 
+  /**
+   * Override method that only renders the Sprite if it is supposed to be visible
+   * @param g The Graphics object to render the base.Sprite on
+   */
   @Override
   public void render(Graphics g) {
     if (visible)

@@ -19,6 +19,7 @@ public class Driver extends MovingSprite {
   private Logger log = Logger.getLogger(getClass().getSimpleName());
   private List<Sprite> ridingSprites = new ArrayList<>();
   private boolean rideable = true;
+  private List<Position> playerSnapPositions = new ArrayList<>();
 
   public Driver(World world, String name, String imgSrc, Position centerPos, Velocity vel) {
     super(world, name, imgSrc, centerPos, vel);
@@ -43,31 +44,30 @@ public class Driver extends MovingSprite {
   }
 
   /**
-   * Repositions the rider onto a discrete point on the Driver in an attemptt to prevent pixel
-   * glitching
+   * Updates a list of possible positions that the rider can snap to (helper function to prevent
+   * pixel glitching).
+   */
+  private void updateSnapPositions(){
+    playerSnapPositions.clear();
+    float firstSnap = getLeftAnchor().getX() + App.TILE_SIZE/2f;
+    int j = 0;
+    int numSnaps = Math.round(getWidth()/App.TILE_SIZE);
+    for (float i = firstSnap; j < numSnaps; i+= App.TILE_SIZE, j++){
+      playerSnapPositions.add(new Position(i, getPosition().getY()));
+    }
+  }
+
+  /**
+   * Repositions the rider onto a discrete point on the Driver in an attempt to prevent pixel
+   * glitching. This looks visually appealing and logical.
    *
    * @param rider The rider to reposition
    */
   private void snapRider(Rideable rider) {
+    updateSnapPositions();
     Sprite ridingSprite = (Sprite) rider;
-    float currX = ridingSprite.getPosition().getX();
-    float currY = ridingSprite.getPosition().getY();
-    float snapX = roundUpToNearestMultiple((int) currX, App.TILE_SIZE / 2);
-    ridingSprite.setLocation(new Position(snapX, currY));
-  }
-
-  /**
-   * Rounds a number to the nearest specified multiple
-   *
-   * @param numToRound The number to round
-   * @param multiple The multiple to round to
-   * @return An integer representing the rounded value
-   */
-  private int roundUpToNearestMultiple(int numToRound, int multiple) {
-    if (multiple == 0) return numToRound;
-    int remainder = numToRound % multiple;
-    if (remainder == 0) return numToRound;
-    return numToRound + multiple - remainder;
+    Position closestSnap = ridingSprite.getPosition().getClosest(playerSnapPositions);
+    ridingSprite.setLocation(closestSnap);
   }
 
   /**
@@ -106,6 +106,8 @@ public class Driver extends MovingSprite {
     if (ridingSprites.size() > 0) {
       float deltaX = super.getMovementVelocity().getHorizontal() * delta;
       float deltaY = super.getMovementVelocity().getVertical() * delta;
+      /* for loop to avoid concurrent modifcation that can result
+         from setLocationDelta deleting the sprite */
       for (int i = 0; i < ridingSprites.size(); i++) {
         Sprite sprite = ridingSprites.get(i);
         sprite.setLocationDelta(deltaX, deltaY);

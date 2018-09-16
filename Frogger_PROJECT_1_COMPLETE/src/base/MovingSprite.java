@@ -64,7 +64,7 @@ public class MovingSprite extends Sprite implements TimeSupport {
 
   /**
    * Uses modulo arithmetic and error management to respawn the object at the appropriate point
-   * (regardless of velocity).
+   * (regardless of velocity - horizontal, diagonal, vertical, e.t.c).
    */
   public void respawn() {
     /* Variables to hold transformations to find new spawn location */
