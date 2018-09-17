@@ -4,8 +4,6 @@ import base.Obstacle;
 import base.Velocity;
 import core.World;
 
-import org.newdawn.slick.Image;
-
 import utilities.Position;
 
 public class BikeSprite extends Obstacle {
@@ -38,13 +36,13 @@ public class BikeSprite extends Obstacle {
    */
   @Override
   public void onTimeTick(int delta) {
-    float xApprox = getPosition().getX();
+    float xApprox = getLocation().getX();
     if (xApprox <= REVERSE_MIN_BOUND || xApprox >= REVERSE_MAX_BOUND) {
       setMovementVelocity(getMovementVelocity().getOppositeVelocity(true, false));
       reverseImage();
       /* snaps the x value to the nearest boundary to maintain consistency */
       float snapX = xApprox <= REVERSE_MIN_BOUND ? REVERSE_MIN_BOUND : REVERSE_MAX_BOUND;
-      Position resetPosition = new Position(snapX, getPosition().getY());
+      Position resetPosition = new Position(snapX, getLocation().getY());
       setLocation(resetPosition);
     }
     super.onTimeTick(delta);

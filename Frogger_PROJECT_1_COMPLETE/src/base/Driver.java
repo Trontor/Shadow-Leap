@@ -53,7 +53,7 @@ public class Driver extends MovingSprite {
     int j = 0;
     int numSnaps = Math.round(getWidth()/App.TILE_SIZE);
     for (float i = firstSnap; j < numSnaps; i+= App.TILE_SIZE, j++){
-      playerSnapPositions.add(new Position(i, getPosition().getY()));
+      playerSnapPositions.add(new Position(i, getLocation().getY()));
     }
   }
 
@@ -66,7 +66,7 @@ public class Driver extends MovingSprite {
   private void snapRider(Rideable rider) {
     updateSnapPositions();
     Sprite ridingSprite = (Sprite) rider;
-    Position closestSnap = ridingSprite.getPosition().getClosest(playerSnapPositions);
+    Position closestSnap = ridingSprite.getLocation().getClosest(playerSnapPositions);
     ridingSprite.setLocation(closestSnap);
   }
 
@@ -122,7 +122,7 @@ public class Driver extends MovingSprite {
     super.respawn();
     if (ridingSprites.size() > 0) {
       for (Sprite sprite : ridingSprites) {
-        sprite.setLocation(centerPosition);
+        sprite.setLocation(getLocation());
       }
     }
   }

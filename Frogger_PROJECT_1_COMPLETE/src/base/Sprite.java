@@ -1,6 +1,5 @@
 package base;
 
-import javafx.geometry.Pos;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 
@@ -17,7 +16,8 @@ import core.*;
 public class Sprite {
   private final String spriteName;
   private final World world;
-  Position centerPosition;
+
+  private Position centerPosition;
   private BoundingBox hitBox;
   private Image image;
   private float height, width;
@@ -62,15 +62,6 @@ public class Sprite {
   /**
    * Sets the image used for rendering this Sprite
    *
-   * @param image Image to set
-   */
-  public void setImage(Image image) {
-    this.image = image;
-  }
-
-  /**
-   * Sets the image used for rendering this Sprite
-   *
    * @param imageSource Path to the image to set
    */
   private void setImage(String imageSource) {
@@ -81,6 +72,15 @@ public class Sprite {
     }
     height = image.getHeight();
     width = image.getWidth();
+  }
+
+  /**
+   * Sets the image used for rendering this Sprite
+   *
+   * @param image Image to set
+   */
+  public void setImage(Image image) {
+    this.image = image;
   }
 
   /**
@@ -106,8 +106,44 @@ public class Sprite {
    *
    * @return Position object specifying the (x, y) coordinates of Sprite center
    */
-  public Position getPosition() {
+  public Position getLocation() {
     return centerPosition;
+  }
+
+  /**
+   * Change the location of the base.Sprite
+   *
+   * @param centerLoc The position to center the base.Sprite around
+   */
+  public void setLocation(Position centerLoc) {
+    centerPosition = centerLoc;
+    hitBox.setX(centerLoc.getX());
+    hitBox.setY(centerLoc.getY());
+    outOfBounds();
+  }
+
+  /**
+   * Idenfies the (x,y) location of the bottom left pixel of the base.Sprite
+   *
+   * @return new Position class with pre-set (x,y) anchor location
+   */
+  public Position getLeftAnchor() {
+    float anchorX = centerPosition.getX() - width / 2;
+    float anchorY = centerPosition.getY() - height / 2;
+    return new Position(anchorX, anchorY);
+  }
+
+  /**
+   * Moves the sprite by the specified number of pixels in any direction
+   *
+   * @param deltaX The number of pixels to move in the x direction
+   * @param deltaY The number of pixels to move in the y direction
+   */
+  public void setLocationDelta(float deltaX, float deltaY) {
+    float newX = centerPosition.getX() + deltaX;
+    float newY = centerPosition.getY() + deltaY;
+    Position newPos = new Position(newX, newY);
+    setLocation(newPos);
   }
 
   /**
@@ -129,17 +165,6 @@ public class Sprite {
   }
 
   /**
-   * Idenfies the (x,y) location of the bottom left pixel of the base.Sprite
-   *
-   * @return new Position class with pre-set (x,y) anchor location
-   */
-  public Position getLeftAnchor() {
-    float anchorX = centerPosition.getX() - width / 2;
-    float anchorY = centerPosition.getY() - height / 2;
-    return new Position(anchorX, anchorY);
-  }
-
-  /**
    * Determines whether the sprite has completely exceeded the bounds of the screen
    *
    * @return True if out of bounds, False if inside bounds
@@ -150,31 +175,6 @@ public class Sprite {
     boolean tooFarLeft = hitBox.getRight() < 0;
     boolean tooFarRight = hitBox.getLeft() > App.SCREEN_WIDTH;
     return tooHigh || tooLow || tooFarLeft || tooFarRight;
-  }
-
-  /**
-   * Change the location of the base.Sprite
-   *
-   * @param centerLoc The position to center the base.Sprite around
-   */
-  public void setLocation(Position centerLoc) {
-    centerPosition = centerLoc;
-    hitBox.setX(centerLoc.getX());
-    hitBox.setY(centerLoc.getY());
-    outOfBounds();
-  }
-
-  /**
-   * Moves the sprite by the specified number of pixels in any direction
-   *
-   * @param deltaX The number of pixels to move in the x direction
-   * @param deltaY The number of pixels to move in the y direction
-   */
-  public void setLocationDelta(float deltaX, float deltaY) {
-    float newX = centerPosition.getX() + deltaX;
-    float newY = centerPosition.getY() + deltaY;
-    Position newPos = new Position(newX, newY);
-    setLocation(newPos);
   }
 
   /**

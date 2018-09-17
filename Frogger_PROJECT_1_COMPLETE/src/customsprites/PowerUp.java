@@ -101,8 +101,8 @@ public class PowerUp extends Sprite implements TimeSupport, Rideable, Collidable
    * @return True if the Power-Up was succesfully moved to the right, else False
    */
   private boolean tryShuffleRight() {
-    float newX = getPosition().getX() + App.TILE_SIZE;
-    Position position = new Position(newX, driver.getPosition().getY());
+    float newX = getLocation().getX() + App.TILE_SIZE;
+    Position position = new Position(newX, driver.getLocation().getY());
     boolean canMove = driver.getHitBox().intersects(position);
     if (canMove) {
       this.setLocation(position);
@@ -116,8 +116,8 @@ public class PowerUp extends Sprite implements TimeSupport, Rideable, Collidable
    * @return True if the Power-Up was succesfully moved to the left, else False
    */
   private boolean tryShuffleLeft() {
-    float newX = getPosition().getX() - App.TILE_SIZE;
-    Position position = new Position(newX, driver.getPosition().getY());
+    float newX = getLocation().getX() - App.TILE_SIZE;
+    Position position = new Position(newX, driver.getLocation().getY());
     boolean canMove = driver.getHitBox().intersects(position);
     if (canMove) {
       this.setLocation(position);

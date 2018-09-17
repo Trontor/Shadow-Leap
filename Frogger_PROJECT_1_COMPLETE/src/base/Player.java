@@ -91,8 +91,8 @@ public class Player extends Sprite
    */
   public void onKeyPress(int key, char c) {
     /* determine key press and set appropriate position offset */
-    float newX = centerPosition.getX();
-    float newY = centerPosition.getY();
+    float newX = getLocation().getX();
+    float newY = getLocation().getY();
     float delta = App.TILE_SIZE;
     switch (key) {
       case Input.KEY_DOWN:
@@ -158,7 +158,7 @@ public class Player extends Sprite
   public void onTimeTick(int delta) {
     checkForDrivers();
     checkCollision();
-    if (centerPosition.getY() <= getWorld().WINNING_Y) {
+    if (getLocation().getY() <= getWorld().WINNING_Y) {
       getWorld().changeWorldState(WorldState.PartlyFinished);
     }
   }

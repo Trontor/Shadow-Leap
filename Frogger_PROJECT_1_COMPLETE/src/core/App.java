@@ -40,14 +40,14 @@ public class App extends BasicGame {
   }
 
   /** Signals to close game on next update */
-  public static void CloseGame() {
+  public static void closeGame() {
     keepRunning = false;
   }
 
   /** Make app change to the next world */
   public static void nextWorld() {
     if (currWorldNum > NUM_WORLDS) {
-      App.CloseGame();
+      App.closeGame();
       return;
     }
     currWorldNum++;

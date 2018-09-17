@@ -63,7 +63,7 @@ public class World {
     switch (state) {
       case Death:
         if (!spriteManager.getPlayer().removeLife()) {
-          App.CloseGame();
+          App.closeGame();
         } else {
           spriteManager.resetPlayer();
         }
@@ -72,7 +72,7 @@ public class World {
         App.nextWorld();
         break;
       case PartlyFinished:
-        Position winLocation = getClosestHolePosition(spriteManager.getPlayer().getPosition());
+        Position winLocation = getClosestHolePosition(spriteManager.getPlayer().getLocation());
         spriteManager.resetPlayer();
         spriteManager.addFauxPlayer(WIN_MARKER, winLocation);
         if (checkWin()) {
@@ -133,9 +133,9 @@ public class World {
     List<Sprite> logs = spriteManager.filterSprites(s -> s.getSpriteName().contains("log"));
     Sprite randomLog = logs.get(getRandomNumber(0, logs.size() - 1));
     PowerUp extraLife =
-        new PowerUp(this, "extralife", "assets/extralife.png", randomLog.getPosition());
+        new PowerUp(this, "extralife", "assets/extralife.png", randomLog.getLocation());
     extraLife.attachDriver((Driver) randomLog);
-    log.info("Spawned extra life on log at " + extraLife.getPosition());
+    log.info("Spawned extra life on log at " + extraLife.getLocation());
     spriteManager.addSprite(extraLife);
     updateExtraLifeSpawnTime();
   }

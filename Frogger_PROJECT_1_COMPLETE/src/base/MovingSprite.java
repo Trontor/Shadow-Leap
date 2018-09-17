@@ -65,11 +65,12 @@ public class MovingSprite extends Sprite implements TimeSupport {
   /**
    * Uses modulo arithmetic and error management to respawn the object at the appropriate point
    * (regardless of velocity - horizontal, diagonal, vertical, e.t.c).
+   * Subclasses can override this method.
    */
   public void respawn() {
     /* Variables to hold transformations to find new spawn location */
-    float roundedX = centerPosition.getX();
-    float roundedY = centerPosition.getY();
+    float roundedX = getLocation().getX();
+    float roundedY = getLocation().getY();
     /* Truth values to determine whether object has over-stepped vertical
      * or horizontal boundaries
      */
@@ -118,8 +119,8 @@ public class MovingSprite extends Sprite implements TimeSupport {
     }
     float xDelta = movementVelocity.getHorizontal() * delta;
     float yDelta = movementVelocity.getVertical() * delta;
-    float newX = centerPosition.getX() + xDelta;
-    float newY = centerPosition.getY() + yDelta;
+    float newX = getLocation().getX() + xDelta;
+    float newY = getLocation().getY() + yDelta;
     setLocation(new Position(newX, newY));
   }
 }

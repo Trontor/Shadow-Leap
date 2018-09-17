@@ -29,8 +29,8 @@ public class SolidPushSprite extends MovingSprite {
     List<Sprite> intersectingSprites =
         getWorld().spriteManager.getIntersectingSprites(this, s -> s instanceof Rideable);
     for (Sprite sprite : intersectingSprites) {
-      float pushX = sprite.getPosition().getX() + getMovementVelocity().getHorizontal() * delta;
-      sprite.setLocation(new Position(pushX, getPosition().getY()));
+      float pushX = sprite.getLocation().getX() + getMovementVelocity().getHorizontal() * delta;
+      sprite.setLocation(new Position(pushX, getLocation().getY()));
     }
     super.onTimeTick(delta);
   }
