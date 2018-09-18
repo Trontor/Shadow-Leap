@@ -1,17 +1,16 @@
 package base;
 
+import core.App;
+import core.Level;
+import core.SpriteAssetManager;
+import customsprites.PowerUp;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-
 import utilities.Position;
-import core.*;
-import customsprites.PowerUp;
 
 /**
  * A Sprite that can be controlled by the user, is bound by the screen, can ride on Driver objects,
@@ -21,19 +20,27 @@ import customsprites.PowerUp;
  * @see <a href="github.com/Trontor">Hosted on GitHub</a>
  */
 public class Player extends Sprite
-    implements KeySupport, TimeSupport, CollisionDetection, ScreenBoundable, Rideable {
+    implements KeySupport, TimeSupport, CollisionDetection, ScreenBoundable, PassengerSupport {
 
+  /** Image representing the */
+  private static Image livesImage;
+  /** Represents the location at which to render the life counter position */
   private final Position LIFE_COUNTER_POS = new Position(24, 744);
+  /** Represents the distance to separate the distance between each life representation */
   private final float COUNTER_DISTANCE = 32;
-  private Logger log = Logger.getLogger(getClass().getSimpleName());
+  /** Image of the lives left icon */
+  private final String LIVES_IMAGE_NAME = "lives";
+  /** Used for internal JVM logging */
+  private final Logger log = Logger.getLogger(getClass().getSimpleName());
+  /** Tracks the number of lives remaining for the player */
   private int lives = 3;
-  private Image livesImage;
+  /** The driver that the player is riding on - can be null */
   private Driver driver;
 
-  public Player(World spawnWorld, String imageSrc, Position centerPos) {
-    super(spawnWorld, "base.Player", imageSrc, centerPos);
+  public Player(Level spawnLevel, String imageSrc, Position centerPos) {
+    super(spawnLevel, "base.Player", imageSrc, centerPos);
     try {
-      livesImage = new Image("assets/lives.png");
+      livesImage = new Image(SpriteAssetManager.getAssetPath(LIVES_IMAGE_NAME));
     } catch (SlickException e) {
       e.printStackTrace();
     }
@@ -81,19 +88,21 @@ public class Player extends Sprite
     float leftX = futurePos.getX() - offset;
     float topY = futurePos.getY() + offset;
     float bottomY = futurePos.getY() - offset;
-    float maxX = App.SCREEN_WIDTH;
-    float maxY = App.SCREEN_HEIGHT;
+    float maxX = App.getScreenWidth();
+    float maxY = App.getScreenHeight();
     return rightX > maxX || leftX < 0 || topY > maxY || bottomY < 0;
   }
 
-  /* Handles movement for player
+  /**
+   * Handles movement for player
+   *
    * @see base.KeySupport#onKeyPress(int, char)
    */
   public void onKeyPress(int key, char c) {
     /* determine key press and set appropriate position offset */
     float newX = getLocation().getX();
     float newY = getLocation().getY();
-    float delta = App.TILE_SIZE;
+    float delta = App.getTileLength();
     switch (key) {
       case Input.KEY_DOWN:
         newY += delta;
@@ -109,8 +118,8 @@ public class Player extends Sprite
         break;
     }
     Position newPos = new Position(newX, newY);
-    for (Sprite s : super.getWorld().spriteManager.getSpritesAt(newPos)) {
-      if (getWorld().spriteManager.getAssetType(s.getSpriteName()) == AssetType.SOLID_TILE) {
+    for (Sprite s : super.getLevel().getSpriteManager().getSpritesAt(newPos)) {
+      if (getLevel().getSpriteManager().getAssetType(s.getSpriteName()) == AssetType.SOLID_TILE) {
         log.info(
             String.format("Intersection with %s which is a solid, can't move.", s.getSpriteName()));
         return;
@@ -132,17 +141,23 @@ public class Player extends Sprite
     /* signals player has died */
     if ((driver == null || !driver.isRideable()) && sprite instanceof Obstacle) {
       log.info("Collided with " + sprite.getSpriteName());
-      getWorld().changeWorldState(WorldState.Death);
+      getLevel().changeWorldState(WorldState.Death);
     }
   }
 
+  /** Checks if the screen's bounds have been extended */
   @Override
   public void onScreenBoundsExtended() {
     /* signals player has died */
     log.info("The player has exceeded screen bounds.");
-    getWorld().changeWorldState(WorldState.Death);
+    getLevel().changeWorldState(WorldState.Death);
   }
 
+  /**
+   * Sets the location of the Player with bound checking
+   *
+   * @param center The location to center the Player at
+   */
   @Override
   public void setLocation(Position center) {
     super.setLocation(center);
@@ -151,24 +166,27 @@ public class Player extends Sprite
     }
   }
 
-  /* Determines if the player has collided with an object
+  /**
+   * Determines if the player has collided with an object
+   *
    * @see base.TimeSupport#onTimeTick(int)
    */
   @Override
   public void onTimeTick(int delta) {
     checkForDrivers();
     checkCollision();
-    if (getLocation().getY() <= getWorld().WINNING_Y) {
-      getWorld().changeWorldState(WorldState.PartlyFinished);
+    if (getLocation().getY() <= getLevel().WINNING_Y) {
+      getLevel().changeWorldState(WorldState.PartlyFinished);
     }
   }
 
+  /** Handles collision detection is occuring */
   @Override
   public void checkCollision() {
     List<Sprite> collidableSprites =
-        getWorld().spriteManager.getIntersectingSprites(this, s -> s instanceof Collidable);
+        getLevel().getSpriteManager().getIntersectingSprites(this, s -> s instanceof Collidable);
     List<Sprite> powerUps =
-        getWorld().spriteManager.getIntersectingSprites(this, s -> s instanceof PowerUp);
+        getLevel().getSpriteManager().getIntersectingSprites(this, s -> s instanceof PowerUp);
     for (Sprite powerUpSprite : powerUps) {
       ((PowerUp) powerUpSprite).applyPowerUp(this);
     }
@@ -178,6 +196,11 @@ public class Player extends Sprite
     }
   }
 
+  /**
+   * Renders both the Player and its lives remaining
+   *
+   * @param g The Graphics object to render the base.Sprite on
+   */
   @Override
   public void render(Graphics g) {
     super.render(g);
@@ -191,15 +214,11 @@ public class Player extends Sprite
     }
   }
 
+  /** Checks if the Sprite has encountered a potential Driver Sprite it can latch onto */
   @Override
   public void checkForDrivers() {
     List<Sprite> drivers =
-        this.getWorld()
-            .spriteManager
-            .getIntersectingSprites(this)
-            .stream()
-            .filter(s -> s instanceof Driver)
-            .collect(Collectors.toList());
+        this.getLevel().getSpriteManager().getIntersectingSprites(this, s -> s instanceof Driver);
     if (drivers.size() == 0) {
       if (driver != null) {
         detachDriver();
@@ -216,6 +235,7 @@ public class Player extends Sprite
     }
   }
 
+  /** Detaches the Player from the Driver */
   @Override
   public void detachDriver() {
     if (driver == null) return;
@@ -224,6 +244,11 @@ public class Player extends Sprite
     driver = null;
   }
 
+  /**
+   * Attaches the Player to a specified Driver
+   *
+   * @param driver The Driver to attach the Player to
+   */
   @Override
   public void attachDriver(Driver driver) {
     log.info("Attached " + driver.getSpriteName() + " to " + this.getSpriteName());

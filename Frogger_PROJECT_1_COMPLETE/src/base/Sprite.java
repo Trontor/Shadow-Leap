@@ -1,11 +1,11 @@
 package base;
 
+import core.App;
+import core.Level;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
-
 import utilities.BoundingBox;
 import utilities.Position;
-import core.*;
 
 /**
  * The superclass of all rendered objects in the game (tiles, obstacles, drivers, players, e.t.c.)
@@ -14,26 +14,32 @@ import core.*;
  * @see <a href="github.com/Trontor">Hosted on GitHub</a>
  */
 public class Sprite {
-  private final String spriteName;
-  private final World world;
 
+  /** The name of the Sprite */
+  private final String spriteName;
+  /** The level that the Sprite is a part of */
+  private final Level level;
+  /** The center position to spawn the sprite at */
   private Position centerPosition;
+  /** The hitbox representing the bounds of the Sprite */
   private BoundingBox hitBox;
+  /** The image representing the visual aspect of this Sprite */
   private Image image;
+  /** The dimensions of the sprite */
   private float height, width;
 
   /**
-   * Initialises a new base.Sprite object
+   * Initialises a new Sprite object
    *
-   * @param spawnWorld The world to spawn the sprite on
-   * @param Name The name of the base.Sprite
+   * @param spawnLevel The level to spawn the sprite on
+   * @param name The name of the Sprite
    * @param imageSrc The path to the image to represent the sprite
-   * @param centerPos The location to spawn the base.Sprite at
+   * @param centerPos The location to spawn the Sprite at
    */
-  public Sprite(World spawnWorld, String Name, String imageSrc, Position centerPos) {
-    this.centerPosition = new Position(App.SCREEN_WIDTH / 2f, App.SCREEN_HEIGHT / 2f);
-    this.world = spawnWorld;
-    spriteName = Name;
+  public Sprite(Level spawnLevel, String name, String imageSrc, Position centerPos) {
+    this.centerPosition = new Position(App.getScreenWidth() / 2f, App.getScreenHeight() / 2f);
+    this.level = spawnLevel;
+    spriteName = name;
     setImage(imageSrc);
     if (hitBox == null) {
       hitBox = new BoundingBox(image, centerPos);
@@ -93,12 +99,12 @@ public class Sprite {
   }
 
   /**
-   * Gets the current world the Sprite is being rendered on
+   * Gets the current level the Sprite is being rendered on
    *
-   * @return World object attached to the Sprite
+   * @return Level object attached to the Sprite
    */
-  public World getWorld() {
-    return world;
+  public Level getLevel() {
+    return level;
   }
 
   /**
@@ -111,7 +117,7 @@ public class Sprite {
   }
 
   /**
-   * Change the location of the base.Sprite
+   * Change the location of the Sprite
    *
    * @param centerLoc The position to center the base.Sprite around
    */
@@ -123,7 +129,7 @@ public class Sprite {
   }
 
   /**
-   * Idenfies the (x,y) location of the bottom left pixel of the base.Sprite
+   * Idenfies the (x,y) location of the bottom left pixel of the Sprite
    *
    * @return new Position class with pre-set (x,y) anchor location
    */
@@ -170,10 +176,10 @@ public class Sprite {
    * @return True if out of bounds, False if inside bounds
    */
   public boolean outOfBounds() {
-    boolean tooHigh = hitBox.getBottom() > App.SCREEN_HEIGHT;
+    boolean tooHigh = hitBox.getBottom() > App.getScreenHeight();
     boolean tooLow = hitBox.getTop() < 0;
     boolean tooFarLeft = hitBox.getRight() < 0;
-    boolean tooFarRight = hitBox.getLeft() > App.SCREEN_WIDTH;
+    boolean tooFarRight = hitBox.getLeft() > App.getScreenWidth();
     return tooHigh || tooLow || tooFarLeft || tooFarRight;
   }
 
@@ -186,7 +192,9 @@ public class Sprite {
     g.drawImage(image, getLeftAnchor().getX(), getLeftAnchor().getY());
   }
 
-  /* Determines whether two Sprites are of the same 'type'
+  /**
+   * Determines whether two Sprites are of the same 'type'
+   *
    * @see java.lang.Object#equals(java.lang.Object)
    */
   @Override
@@ -197,7 +205,9 @@ public class Sprite {
     return obj.toString().equals(this.toString());
   }
 
-  /* Returns the name of the Sprite as the String representation of the Sprite
+  /**
+   * Returns the name of the Sprite as the String representation of the Sprite
+   *
    * @see java.lang.Object#toString()
    */
   @Override

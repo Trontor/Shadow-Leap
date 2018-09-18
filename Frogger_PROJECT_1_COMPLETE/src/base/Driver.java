@@ -1,12 +1,11 @@
 package base;
 
 import core.App;
-
+import core.Level;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import utilities.Position;
-import core.World;
 
 /**
  * A Sprite that can move itself and other sprites that are 'riding' the sprite at a specified
@@ -16,13 +15,26 @@ import core.World;
  * @see <a href="github.com/Trontor">Hosted on GitHub</a>
  */
 public class Driver extends MovingSprite {
-  private Logger log = Logger.getLogger(getClass().getSimpleName());
-  private List<Sprite> ridingSprites = new ArrayList<>();
-  private boolean rideable = true;
-  private List<Position> playerSnapPositions = new ArrayList<>();
 
-  public Driver(World world, String name, String imgSrc, Position centerPos, Velocity vel) {
-    super(world, name, imgSrc, centerPos, vel);
+  /** Used for internal JVM logging */
+  private final Logger log = Logger.getLogger(getClass().getSimpleName());
+  /** Keeps track of all currently riding sprites at an instance */
+  private final List<Sprite> ridingSprites = new ArrayList<>();
+  /** A list of all positions that the player can snap to on the driver */
+  private final List<Position> playerSnapPositions = new ArrayList<>();
+  /** Indicates whether the driver is ridable at a given instance */
+  private boolean rideable = true;
+
+  /**
+   * Initialises a new Driver Sprite object
+   *
+   * @param level The level to spawn the Driver Sprite on
+   * @param name The name of the Driver Sprite
+   * @param imgSrc The path to the image to represent the Driver Sprite
+   * @param centerPos The location at which to spawn the Driver Sprite
+   */
+  public Driver(Level level, String name, String imgSrc, Position centerPos, Velocity vel) {
+    super(level, name, imgSrc, centerPos, vel);
   }
 
   /**
@@ -47,12 +59,12 @@ public class Driver extends MovingSprite {
    * Updates a list of possible positions that the rider can snap to (helper function to prevent
    * pixel glitching).
    */
-  private void updateSnapPositions(){
+  private void updateSnapPositions() {
     playerSnapPositions.clear();
-    float firstSnap = getLeftAnchor().getX() + App.TILE_SIZE/2f;
+    float firstSnap = getLeftAnchor().getX() + App.getTileLength() / 2f;
     int j = 0;
-    int numSnaps = Math.round(getWidth()/App.TILE_SIZE);
-    for (float i = firstSnap; j < numSnaps; i+= App.TILE_SIZE, j++){
+    int numSnaps = Math.round(getWidth() / App.getTileLength());
+    for (float i = firstSnap; j < numSnaps; i += App.getTileLength(), j++) {
       playerSnapPositions.add(new Position(i, getLocation().getY()));
     }
   }
@@ -63,7 +75,7 @@ public class Driver extends MovingSprite {
    *
    * @param rider The rider to reposition
    */
-  private void snapRider(Rideable rider) {
+  private void snapRider(PassengerSupport rider) {
     updateSnapPositions();
     Sprite ridingSprite = (Sprite) rider;
     Position closestSnap = ridingSprite.getLocation().getClosest(playerSnapPositions);
@@ -75,7 +87,7 @@ public class Driver extends MovingSprite {
    *
    * @param rider The rider to add
    */
-  public void addRider(Rideable rider) {
+  public void addRider(PassengerSupport rider) {
     if (!(rider instanceof Sprite)) {
       log.info("Cannot add rider because it is not of type Sprite");
       return;
@@ -89,7 +101,7 @@ public class Driver extends MovingSprite {
    *
    * @param rider The rider to remove
    */
-  public void removeRider(Rideable rider) {
+  public void removeRider(PassengerSupport rider) {
     if (rider instanceof Sprite) {
       ridingSprites.remove(rider);
     }
@@ -107,7 +119,7 @@ public class Driver extends MovingSprite {
       float deltaX = super.getMovementVelocity().getHorizontal() * delta;
       float deltaY = super.getMovementVelocity().getVertical() * delta;
       /* for loop to avoid concurrent modifcation that can result
-         from setLocationDelta deleting the sprite */
+      from setLocationDelta deleting the sprite */
       for (int i = 0; i < ridingSprites.size(); i++) {
         Sprite sprite = ridingSprites.get(i);
         sprite.setLocationDelta(deltaX, deltaY);

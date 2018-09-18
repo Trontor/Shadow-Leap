@@ -1,41 +1,70 @@
 package core;
 
-import base.*;
-
+import base.Driver;
+import base.KeySupport;
+import base.Sprite;
+import base.TimeSupport;
+import base.WorldState;
+import customsprites.PowerUp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
-
-import customsprites.PowerUp;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import utilities.Position;
 
 /** A wrapper class that encapsulates all the sprites and events for a specified level. */
-public class World {
-  /* constants that describe the world*/
-  public final AssetManager spriteManager;
+public class Level {
+  /** The Y coordinate for the winning rpw */
   public final int WINNING_Y = 48;
-  private final String WIN_MARKER = "filledhole";
+  /** Manages the Sprites and associated functions for this level */
+  private final SpriteAssetManager spriteManager;
+  /** A description of the placeholder markers indicating level progress */
+  private final String PROGRESS_MARKER = "filledhole";
+  /** Bottom limit to random spawn time for the extra life object */
   private final int EXTRA_LIFE_MIN_WAIT = 25;
+  /** Upper limit to random spawn time for the extra life object */
   private final int EXTRA_LIFE_MAX_WAIT = 35;
+  /** The starting X value for the winning holes */
   private final int WINNING_X_START = 120;
+  /** The X separation between the winning holes */
   private final int WINNING_X_SEPARATION = 192;
+  /** The number of the current level */
+  private final int levelNumber;
+  /** A list of all partial completion positions ('holes') for the level */
   private final List<Position> winningPositions = new ArrayList<>();
+  /** Used for internal JVM logging */
+  private final Logger log = Logger.getLogger(getClass().getSimpleName());
+  /** The time between successive extra life object spawns */
   private int extraLifeSpawnWaitTime;
+  /** Counter to keep track of the time elapsed since the last extra spawn time */
   private int extraLifeTimeDelta;
-  private Logger log = Logger.getLogger(getClass().getSimpleName());
 
-  /** Initialises a new core.World */
-  public World(int level) {
-    spriteManager = new AssetManager(this, level);
-    spriteManager.loadAssets();
+  /** Initialises a new core.Level */
+  public Level(int level) {
+    levelNumber = level;
+    spriteManager = new SpriteAssetManager(this);
+    /* loads all assets for this level */
+    getSpriteManager().loadAssets();
     /* stores Position of all holes to be filled */
-    for (int x = WINNING_X_START; x < App.SCREEN_WIDTH; x += WINNING_X_SEPARATION) {
+    for (int x = WINNING_X_START; x < App.getScreenWidth(); x += WINNING_X_SEPARATION) {
       winningPositions.add(new Position(x, WINNING_Y));
     }
     updateExtraLifeSpawnTime();
+  }
+
+  public SpriteAssetManager getSpriteManager() {
+    return spriteManager;
+  }
+
+  /**
+   * Returns the current level number
+   *
+   * @return Integer representing the level number
+   */
+  public int getLevelNumber() {
+    return levelNumber;
   }
 
   /**
@@ -59,22 +88,22 @@ public class World {
    * @param state The state to change WorldState to
    */
   public void changeWorldState(WorldState state) {
-    log.info("World State Changed: " + "Current State = " + state.toString());
+    log.info("Level State Changed: " + "Current State = " + state.toString());
     switch (state) {
       case Death:
-        if (!spriteManager.getPlayer().removeLife()) {
+        if (!getSpriteManager().getPlayer().removeLife()) {
           App.closeGame();
         } else {
-          spriteManager.resetPlayer();
+          getSpriteManager().resetPlayer();
         }
         break;
       case Finished:
         App.nextWorld();
         break;
       case PartlyFinished:
-        Position winLocation = getClosestHolePosition(spriteManager.getPlayer().getLocation());
-        spriteManager.resetPlayer();
-        spriteManager.addFauxPlayer(WIN_MARKER, winLocation);
+        Position winLocation = getClosestHolePosition(getSpriteManager().getPlayer().getLocation());
+        getSpriteManager().resetPlayer();
+        getSpriteManager().addFauxPlayer(PROGRESS_MARKER, winLocation);
         if (checkWin()) {
           changeWorldState(WorldState.Finished);
         }
@@ -109,13 +138,12 @@ public class World {
   public boolean checkWin() {
     for (Position winningPos : winningPositions) {
       boolean holeFilled = false;
-      for (Sprite sprite : spriteManager.getSpritesAt(winningPos)) {
-        if (sprite.getSpriteName().equals(WIN_MARKER)) {
+      for (Sprite sprite : getSpriteManager().getSpritesAt(winningPos)) {
+        if (sprite.getSpriteName().equals(PROGRESS_MARKER)) {
           holeFilled = true;
         }
       }
-      if (!holeFilled)
-        return false;
+      if (!holeFilled) return false;
     }
     return true;
   }
@@ -130,13 +158,13 @@ public class World {
    * Spawns an Extra Life power-up on a random log that grants a player an extra life on collision
    */
   private void spawnExtraLife() {
-    List<Sprite> logs = spriteManager.filterSprites(s -> s.getSpriteName().contains("log"));
+    List<Sprite> logs = getSpriteManager().filterSprites(s -> s.getSpriteName().contains("log"));
     Sprite randomLog = logs.get(getRandomNumber(0, logs.size() - 1));
     PowerUp extraLife =
         new PowerUp(this, "extralife", "assets/extralife.png", randomLog.getLocation());
     extraLife.attachDriver((Driver) randomLog);
     log.info("Spawned extra life on log at " + extraLife.getLocation());
-    spriteManager.addSprite(extraLife);
+    getSpriteManager().addSprite(extraLife);
     updateExtraLifeSpawnTime();
   }
 
@@ -152,35 +180,36 @@ public class World {
       spawnExtraLife();
       extraLifeTimeDelta = 0;
     }
-    List<Sprite> timeSupportSprites = spriteManager.filterSprites(s -> s instanceof TimeSupport);
+    List<Sprite> timeSupportSprites =
+        getSpriteManager().filterSprites(s -> s instanceof TimeSupport);
     for (Sprite s : timeSupportSprites) {
       ((TimeSupport) s).onTimeTick(delta);
     }
   }
 
   /**
-   * Signals all key-pressed Sprites of a new key press
+   * Signals all key-pressed sprites of a new key press
    *
-   * @param key Integer value of pressed key (ASCII)
-   * @param c Java character representation of pressed key
+   * @param key The ASCII value of the key pressed
+   * @param c The ASCII character of the key pressed
    */
   public void onKeyPressed(int key, char c) {
-    List<Sprite> keySupportSprites = spriteManager.filterSprites(s -> s instanceof KeySupport);
+    List<Sprite> keySupportSprites = getSpriteManager().filterSprites(s -> s instanceof KeySupport);
     for (Sprite s : keySupportSprites) {
       ((KeySupport) s).onKeyPress(key, c);
     }
   }
 
   /**
-   * Renders all sprites on the Sprite Map onto the World
+   * Renders all sprites on the Sprite Map onto the Level
    *
-   * @param g The Graphics object to render the World on
+   * @param g The Graphics object to render the Level on
    */
   public void render(Graphics g) {
-    if (spriteManager == null || spriteManager.getSpriteMap() == null) {
+    if (getSpriteManager() == null || getSpriteManager().getSpriteMap() == null) {
       return;
     }
-    for (Sprite s : spriteManager.getSpriteMap()) {
+    for (Sprite s : getSpriteManager().getSpriteMap()) {
       s.render(g);
     }
   }

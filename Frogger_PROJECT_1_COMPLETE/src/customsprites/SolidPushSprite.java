@@ -1,12 +1,11 @@
 package customsprites;
 
 import base.MovingSprite;
-import base.Rideable;
+import base.PassengerSupport;
 import base.Sprite;
 import base.Velocity;
-import core.World;
+import core.Level;
 import java.util.List;
-
 import utilities.Position;
 
 /**
@@ -16,18 +15,19 @@ import utilities.Position;
 public class SolidPushSprite extends MovingSprite {
 
   public SolidPushSprite(
-      World spawnWorld, String Name, String imageSrc, Position centerPos, Velocity velocity) {
-    super(spawnWorld, Name, imageSrc, centerPos, velocity);
+      Level spawnLevel, String Name, String imageSrc, Position centerPos, Velocity velocity) {
+    super(spawnLevel, Name, imageSrc, centerPos, velocity);
   }
 
   /**
    * Override method to handle pushing logic
+   *
    * @param delta The time (in ms) since the last update
    */
   @Override
   public void onTimeTick(int delta) {
     List<Sprite> intersectingSprites =
-        getWorld().spriteManager.getIntersectingSprites(this, s -> s instanceof Rideable);
+        getLevel().getSpriteManager().getIntersectingSprites(this, s -> s instanceof PassengerSupport);
     for (Sprite sprite : intersectingSprites) {
       float pushX = sprite.getLocation().getX() + getMovementVelocity().getHorizontal() * delta;
       sprite.setLocation(new Position(pushX, getLocation().getY()));

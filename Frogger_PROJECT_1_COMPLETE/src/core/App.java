@@ -1,10 +1,11 @@
 package core;
+
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Input;
+import org.newdawn.slick.SlickException;
 
 /**
  * Main entry point for the Slick2D application
@@ -13,17 +14,52 @@ import org.newdawn.slick.Input;
  *     2018
  */
 public class App extends BasicGame {
-  public static final int SCREEN_WIDTH = 1024;
-  public static final int SCREEN_HEIGHT = 768;
-  public static int TILE_SIZE = 48;
-  private static int NUM_WORLDS = 2;
+
+  /** Describes the number of pixels the screen can render horizontally */
+  private static final int SCREEN_WIDTH = 1024;
+  /** Describes the number of pixels the screen can render vertically */
+  private static final int SCREEN_HEIGHT = 768;
+  /** Describes the number of pixels the base sprite object should */
+  private static final int TILE_LENGTH = 48;
+  /** Keeps track of the maximum number of worlds in the game */
+  private static final int NUMBER_OF_WORLDS = 2;
+  /** Represents the level to run at the start of the game */
+  private static final int SPAWN_WORLD_NUM = 0;
+  /** Flag that indicates whether the game should continue running */
   private static boolean keepRunning = true;
-  private static World world;
-  private static int currWorldNum =0;
+  /** Represents the world to be currently rendered */
+  private static Level currentLevel;
 
   /** Initializes the core.App class */
   public App() {
     super("Shadow Leap");
+  }
+
+  /**
+   * Gets the screen width
+   *
+   * @return Width of the screen
+   */
+  public static int getScreenWidth() {
+    return SCREEN_WIDTH;
+  }
+
+  /**
+   * Gets the screen height
+   *
+   * @return Height of the screen
+   */
+  public static int getScreenHeight() {
+    return SCREEN_HEIGHT;
+  }
+
+  /**
+   * Gets the side length of the base square tile
+   *
+   * @return The side length of the basic tile object
+   */
+  public static int getTileLength() {
+    return TILE_LENGTH;
   }
 
   /**
@@ -44,30 +80,35 @@ public class App extends BasicGame {
     keepRunning = false;
   }
 
-  /** Make app change to the next world */
+  /** Make app change to the next currentLevel */
   public static void nextWorld() {
-    if (currWorldNum > NUM_WORLDS) {
+    int currentWorldNum = currentLevel.getLevelNumber();
+    if (currentWorldNum > NUMBER_OF_WORLDS) {
       App.closeGame();
       return;
     }
-    currWorldNum++;
-    world = new World(currWorldNum);
+    currentLevel = new Level(++currentWorldNum);
   }
 
-  /* (non-Javadoc)
-   * @see org.newdawn.slick.BasicGame#init(org.newdawn.slick.GameContainer)
+  /**
+   * Initialises the game
+   *
+   * @param gc The GameContainer object to use for rendering
    */
   @Override
   public void init(GameContainer gc) {
-    world = new World(currWorldNum);
+    currentLevel = new Level(SPAWN_WORLD_NUM);
   }
 
-  /* (non-Javadoc)
-   * @see org.newdawn.slick.BasicGame#keyPressed(int, char)
+  /**
+   * Event that is called when a key is pressed
+   *
+   * @param key The ASCII value of the key pressed
+   * @param c The ASCII character of the key pressed
    */
   @Override
   public void keyPressed(int key, char c) {
-    world.onKeyPressed(key, c);
+    currentLevel.onKeyPressed(key, c);
   }
 
   /**
@@ -82,7 +123,7 @@ public class App extends BasicGame {
       gc.exit();
     }
     Input input = gc.getInput();
-    world.update(input, delta);
+    currentLevel.update(input, delta);
   }
 
   /**
@@ -91,7 +132,8 @@ public class App extends BasicGame {
    * @param gc The Slick game container object.
    * @param g The Slick graphics object, used for drawing.
    */
+  @Override
   public void render(GameContainer gc, Graphics g) {
-    world.render(g);
+    currentLevel.render(g);
   }
 }

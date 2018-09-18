@@ -2,23 +2,32 @@ package customsprites;
 
 import base.Obstacle;
 import base.Velocity;
-import core.World;
-
+import core.Level;
 import utilities.Position;
 
 public class BikeSprite extends Obstacle {
 
-  /* Characteristics representing the bike's movement boundaries */
+  /** The left bound that the bike reverses at */
   private final int REVERSE_MIN_BOUND = 24;
+  /** The right bound that the bike reverses at */
   private final int REVERSE_MAX_BOUND = 1000;
 
+  /**
+   * Initialises a new Sprite object
+   *
+   * @param spawnLevel The level to spawn the Bike Sprite on
+   * @param obstacleName The level to spawn the Bike Sprite on
+   * @param imageSrc The path to the image to represent the sprite
+   * @param centerPos The location to spawn the Bike Sprite at
+   * @param speedInfo The movement velocity to move the Bike Sprite at
+   */
   public BikeSprite(
-      World spawnWorld,
+      Level spawnLevel,
       String obstacleName,
       String imageSrc,
       Position centerPos,
       Velocity speedInfo) {
-    super(spawnWorld, obstacleName, imageSrc, centerPos, speedInfo);
+    super(spawnLevel, obstacleName, imageSrc, centerPos, speedInfo);
     if (speedInfo.getHorizontal() < 0) {
       reverseImage();
     }

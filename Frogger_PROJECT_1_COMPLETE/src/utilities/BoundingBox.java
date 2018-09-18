@@ -66,6 +66,8 @@ public class BoundingBox {
 
   @Override
   public String toString() {
-    return String.format("Top = %.2f, Bottom = %.2f, Left = %.2f, Right = %.2f", getTop(), getBottom(), getLeft(), getRight());
+    return String.format(
+        "Top = %.2f, Bottom = %.2f, Left = %.2f, Right = %.2f",
+        getTop(), getBottom(), getLeft(), getRight());
   }
 }

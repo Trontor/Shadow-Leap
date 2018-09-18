@@ -1,7 +1,8 @@
 package base;
 
+import core.App;
+import core.Level;
 import utilities.Position;
-import core.*;
 
 /**
  * A Sprite that can move at a specified velocity and wrap around the screen
@@ -14,9 +15,18 @@ public class MovingSprite extends Sprite implements TimeSupport {
   private final float RESPAWN_PADDING = 0.47f;
   private Velocity movementVelocity;
 
+  /**
+   * Initialises a new Moving Sprite object
+   *
+   * @param spawnLevel The level to spawn the sprite on
+   * @param name The name of the Sprite
+   * @param imageSrc The path to the image to represent the sprite
+   * @param centerPos The location to spawn the Sprite at
+   * @param velocity The movement velocity to move the Sprite at
+   */
   public MovingSprite(
-      World spawnWorld, String Name, String imageSrc, Position centerPos, Velocity velocity) {
-    super(spawnWorld, Name, imageSrc, centerPos);
+      Level spawnLevel, String name, String imageSrc, Position centerPos, Velocity velocity) {
+    super(spawnLevel, name, imageSrc, centerPos);
     movementVelocity = velocity;
   }
 
@@ -46,8 +56,8 @@ public class MovingSprite extends Sprite implements TimeSupport {
    */
   private float getClosestWall(float xVal) {
     float leftDiff = Math.abs(xVal - 0);
-    float rightDiff = Math.abs(xVal - App.SCREEN_WIDTH);
-    return leftDiff < rightDiff ? 0 : App.SCREEN_WIDTH;
+    float rightDiff = Math.abs(xVal - App.getScreenWidth());
+    return leftDiff < rightDiff ? 0 : App.getScreenWidth();
   }
 
   /**
@@ -58,14 +68,14 @@ public class MovingSprite extends Sprite implements TimeSupport {
    */
   private float getClosestCeiling(float yVal) {
     float bottomDiff = Math.abs(yVal - 0);
-    float topDiff = Math.abs(yVal - App.SCREEN_HEIGHT);
-    return bottomDiff < topDiff ? 0 : App.SCREEN_HEIGHT;
+    float topDiff = Math.abs(yVal - App.getScreenHeight());
+    return bottomDiff < topDiff ? 0 : App.getScreenHeight();
   }
 
   /**
    * Uses modulo arithmetic and error management to respawn the object at the appropriate point
-   * (regardless of velocity - horizontal, diagonal, vertical, e.t.c).
-   * Subclasses can override this method.
+   * (regardless of velocity - horizontal, diagonal, vertical, e.t.c). Subclasses can override this
+   * method.
    */
   public void respawn() {
     /* Variables to hold transformations to find new spawn location */
@@ -74,14 +84,14 @@ public class MovingSprite extends Sprite implements TimeSupport {
     /* Truth values to determine whether object has over-stepped vertical
      * or horizontal boundaries
      */
-    boolean horizontalExtend = roundedX < 0 || roundedX > App.SCREEN_WIDTH;
-    boolean verticalExtend = roundedY < 0 || roundedY > App.SCREEN_HEIGHT;
+    boolean horizontalExtend = roundedX < 0 || roundedX > App.getScreenWidth();
+    boolean verticalExtend = roundedY < 0 || roundedY > App.getScreenHeight();
     /* performs loop arithmetic with error-fixed values p(new) = (p(old) + v) % (height/width)*/
     /* math.stackexchange.com/questions/2907303/finding-opposite-edge-wraparound-location-given-vector-and-location */
     float newX = roundedX + movementVelocity.getHorizontal();
     float newY = roundedY + movementVelocity.getVertical();
-    newX = (newX % App.SCREEN_WIDTH) + (newX < 0 ? App.SCREEN_WIDTH : 0);
-    newY = (newY % App.SCREEN_HEIGHT) + (newY < 0 ? App.SCREEN_HEIGHT : 0);
+    newX = (newX % App.getScreenWidth()) + (newX < 0 ? App.getScreenWidth() : 0);
+    newY = (newY % App.getScreenHeight()) + (newY < 0 ? App.getScreenHeight() : 0);
     /* performs further error-adjustment that may have resulted in bugged modulo arithmetic
      * also respawns bus as close to out-of-bounds as possible to enforce a smooth animation
      * */
@@ -108,6 +118,11 @@ public class MovingSprite extends Sprite implements TimeSupport {
     setLocation(newPos);
   }
 
+  /**
+   * Handles sprite movement math based upon the time since last update
+   *
+   * @param delta Time passed since last frame (milliseconds).
+   */
   public void onTimeTick(int delta) {
     /* not necessary but reduces unnecessary calculations since this is called frequently*/
     if (movementVelocity.getMagnitude() == 0) {
