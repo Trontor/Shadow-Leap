@@ -1,11 +1,6 @@
 package core;
 
-import base.AssetType;
-import base.Driver;
-import base.Obstacle;
-import base.Player;
-import base.Sprite;
-import base.Velocity;
+import base.*;
 import customsprites.BikeSprite;
 import customsprites.MagicianSprite;
 import customsprites.SolidPushSprite;
@@ -136,10 +131,11 @@ public class SpriteAssetManager {
    * @return A list of Sprites objects
    */
   public List<Sprite> getSpritesAt(Position pos) {
-    Sprite dummySprite = new Sprite(level, null, getAssetPath(PLAYER_ASSET_NAME), pos);
     List<Sprite> returnList = new ArrayList<>();
     for (Sprite s : spriteMap) {
-      if (s.getHitBox().intersects(dummySprite.getHitBox())) returnList.add(s);
+      if (s.getHitBox().intersects(pos)) {
+          returnList.add(s);
+      }
     }
     return returnList;
   }

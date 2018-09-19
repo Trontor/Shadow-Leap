@@ -14,7 +14,6 @@ import utilities.Position;
  * @see <a href="github.com/Trontor">Hosted on GitHub</a>
  */
 public class Sprite {
-
   /** The name of the Sprite */
   private final String spriteName;
   /** The level that the Sprite is a part of */

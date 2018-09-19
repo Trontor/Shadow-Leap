@@ -1,27 +1,20 @@
 package core;
 
-import base.Driver;
-import base.KeySupport;
-import base.Sprite;
-import base.TimeSupport;
-import base.LevelState;
+import base.*;
 import customsprites.PowerUp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.logging.Logger;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import utilities.Position;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.logging.Logger;
+
 /** A wrapper class that encapsulates all the sprites and events for a specified level. */
 public class Level {
   /** The Y coordinate for the winning rpw */
-  public final int WINNING_Y = 48;
-  /** Manages the Sprites and associated functions for this level */
-  private final SpriteAssetManager spriteManager;
-  /** A description of the placeholder markers indicating level progress */
-  private final String PROGRESS_MARKER = "filledhole";
+  private static final int WINNING_Y = 48;
   /** Bottom limit to random spawn time for the extra life object */
   private static final int EXTRA_LIFE_MIN_WAIT = 25;
   /** Upper limit to random spawn time for the extra life object */
@@ -30,6 +23,10 @@ public class Level {
   private static final int WINNING_X_START = 120;
   /** The X separation between the winning holes */
   private static final int WINNING_X_SEPARATION = 192;
+  /** A description of the placeholder markers indicating level progress */
+  private static final String PROGRESS_MARKER = "filledhole";
+  /** Manages the Sprites and associated functions for this level */
+  private final SpriteAssetManager spriteManager;
   /** The number of the current level */
   private final int levelNumber;
   /** A list of all partial completion positions ('holes') for the level */
@@ -40,7 +37,6 @@ public class Level {
   private int extraLifeSpawnWaitTime;
   /** Counter to keep track of the time elapsed since the last extra spawn time */
   private int extraLifeTimeDelta;
-
   /** Initialises a new core.Level */
   public Level(int level) {
     levelNumber = level;
@@ -52,6 +48,10 @@ public class Level {
       winningPositions.add(new Position(x, WINNING_Y));
     }
     updateExtraLifeSpawnTime();
+  }
+
+  public static int getWinningY() {
+    return WINNING_Y;
   }
 
   public SpriteAssetManager getSpriteManager() {
