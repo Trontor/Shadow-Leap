@@ -12,7 +12,7 @@ import utilities.Position;
  */
 public class MovingSprite extends Sprite implements TimeSupport {
   /* constant used to ensure the MovingSprite is just in bounds while minimising its visibility */
-  private final float RESPAWN_PADDING = 0.47f;
+  private static final float RESPAWN_PADDING = 0.47f;
   private Velocity movementVelocity;
 
   /**

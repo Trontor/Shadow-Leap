@@ -4,7 +4,7 @@ import base.Driver;
 import base.KeySupport;
 import base.Sprite;
 import base.TimeSupport;
-import base.WorldState;
+import base.LevelState;
 import customsprites.PowerUp;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +23,13 @@ public class Level {
   /** A description of the placeholder markers indicating level progress */
   private final String PROGRESS_MARKER = "filledhole";
   /** Bottom limit to random spawn time for the extra life object */
-  private final int EXTRA_LIFE_MIN_WAIT = 25;
+  private static final int EXTRA_LIFE_MIN_WAIT = 25;
   /** Upper limit to random spawn time for the extra life object */
-  private final int EXTRA_LIFE_MAX_WAIT = 35;
+  private static final int EXTRA_LIFE_MAX_WAIT = 35;
   /** The starting X value for the winning holes */
-  private final int WINNING_X_START = 120;
+  private static final int WINNING_X_START = 120;
   /** The X separation between the winning holes */
-  private final int WINNING_X_SEPARATION = 192;
+  private static final int WINNING_X_SEPARATION = 192;
   /** The number of the current level */
   private final int levelNumber;
   /** A list of all partial completion positions ('holes') for the level */
@@ -85,12 +85,12 @@ public class Level {
   /**
    * Changes the state of the world
    *
-   * @param state The state to change WorldState to
+   * @param state The state to change LevelState to
    */
-  public void changeWorldState(WorldState state) {
+  public void changeWorldState(LevelState state) {
     log.info("Level State Changed: " + "Current State = " + state.toString());
     switch (state) {
-      case Death:
+      case PlayerDeath:
         if (!getSpriteManager().getPlayer().removeLife()) {
           App.closeGame();
         } else {
@@ -105,7 +105,7 @@ public class Level {
         getSpriteManager().resetPlayer();
         getSpriteManager().addFauxPlayer(PROGRESS_MARKER, winLocation);
         if (checkWin()) {
-          changeWorldState(WorldState.Finished);
+          changeWorldState(LevelState.Finished);
         }
         break;
     }

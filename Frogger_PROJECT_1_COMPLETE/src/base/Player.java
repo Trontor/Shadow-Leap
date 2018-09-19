@@ -4,13 +4,14 @@ import core.App;
 import core.Level;
 import core.SpriteAssetManager;
 import customsprites.PowerUp;
-import java.util.List;
-import java.util.logging.Logger;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import utilities.Position;
+
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * A Sprite that can be controlled by the user, is bound by the screen, can ride on Driver objects,
@@ -22,14 +23,14 @@ import utilities.Position;
 public class Player extends Sprite
     implements KeySupport, TimeSupport, CollisionDetection, ScreenBoundable, PassengerSupport {
 
+  /** Represents the distance to separate the distance between each life representation */
+  private static final float COUNTER_DISTANCE = 32;
+  /** Image of the lives left icon */
+  private static final String LIVES_IMAGE_NAME = "lives";
+  /** Represents the location at which to render the life counter position */
+  private static final Position LIFE_COUNTER_POS = new Position(24, 744);
   /** Image representing the */
   private static Image livesImage;
-  /** Represents the location at which to render the life counter position */
-  private final Position LIFE_COUNTER_POS = new Position(24, 744);
-  /** Represents the distance to separate the distance between each life representation */
-  private final float COUNTER_DISTANCE = 32;
-  /** Image of the lives left icon */
-  private final String LIVES_IMAGE_NAME = "lives";
   /** Used for internal JVM logging */
   private final Logger log = Logger.getLogger(getClass().getSimpleName());
   /** Tracks the number of lives remaining for the player */
@@ -137,11 +138,12 @@ public class Player extends Sprite
    *
    * @param sprite The sprite to check
    */
+  @Override
   public void onCollision(Sprite sprite) {
     /* signals player has died */
     if ((driver == null || !driver.isRideable()) && sprite instanceof Obstacle) {
       log.info("Collided with " + sprite.getSpriteName());
-      getLevel().changeWorldState(WorldState.Death);
+      getLevel().changeWorldState(LevelState.PlayerDeath);
     }
   }
 
@@ -150,7 +152,7 @@ public class Player extends Sprite
   public void onScreenBoundsExtended() {
     /* signals player has died */
     log.info("The player has exceeded screen bounds.");
-    getLevel().changeWorldState(WorldState.Death);
+    getLevel().changeWorldState(LevelState.PlayerDeath);
   }
 
   /**
@@ -176,7 +178,7 @@ public class Player extends Sprite
     checkForDrivers();
     checkCollision();
     if (getLocation().getY() <= getLevel().WINNING_Y) {
-      getLevel().changeWorldState(WorldState.PartlyFinished);
+      getLevel().changeWorldState(LevelState.PartlyFinished);
     }
   }
 

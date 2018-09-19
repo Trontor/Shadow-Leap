@@ -184,7 +184,7 @@ public class Sprite {
   }
 
   /**
-   * Draws the base.Sprite
+   * Draws the Sprite
    *
    * @param g The Graphics object to render the base.Sprite on
    */

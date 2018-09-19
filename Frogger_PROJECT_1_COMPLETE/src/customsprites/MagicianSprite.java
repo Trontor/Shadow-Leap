@@ -9,15 +9,26 @@ import utilities.Position;
 /** Represents a Sprite that can disappear and reappear */
 public class MagicianSprite extends Driver {
 
-  /* Characteristics and default values */
-  private final float VISIBLE_TIME = 7;
-  private final float HIDDEN_TIME = 2;
+  /** The time in seconds that the MagicianSprite should be periodically hidden */
+  private static final float VISIBLE_TIME = 7;
+  /** The time in seconds that the MagicianSprite should be periodically hidden */
+  private static final float HIDDEN_TIME = 2;
+  /** Flag indicating whether the MagicianSprite should be visible or not */
   private boolean visible = true;
+  /** Tracks the time since the last visibility action was performed */
   private float currentTime = 0;
 
+  /**
+   * Initialises a Magician Sprite that represents a Sprite that can change visibility
+   *
+   * @param spawnLevel The level to spawn the Magician Sprite on
+   * @param name The name of the Magician Sprite
+   * @param imgSrc The path to the image to represent the Magician Sprite
+   * @param centerPos The location at which to spawn the Magician Sprite
+   */
   public MagicianSprite(
-      Level spawnLevel, String Name, String imageSrc, Position centerPos, Velocity velocity) {
-    super(spawnLevel, Name, imageSrc, centerPos, velocity);
+      Level spawnLevel, String name, String imgSrc, Position centerPos, Velocity velocity) {
+    super(spawnLevel, name, imgSrc, centerPos, velocity);
   }
 
   /**

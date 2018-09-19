@@ -8,9 +8,9 @@ import utilities.Position;
 public class BikeSprite extends Obstacle {
 
   /** The left bound that the bike reverses at */
-  private final int REVERSE_MIN_BOUND = 24;
+  private static final int REVERSE_MIN_BOUND = 24;
   /** The right bound that the bike reverses at */
-  private final int REVERSE_MAX_BOUND = 1000;
+  private static final int REVERSE_MAX_BOUND = 1000;
 
   /**
    * Initialises a new Sprite object

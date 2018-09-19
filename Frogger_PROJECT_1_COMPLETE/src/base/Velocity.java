@@ -2,8 +2,9 @@ package base;
 
 /** Represents values for speed in the x and y directions, in units: ms/px */
 public class Velocity {
-  /* immutable */
+  /** The scalar speed in the horizontal direction */
   private final float horizontal;
+  /** The scalar speed in the vertical direction */
   private final float vertical;
 
   public Velocity(float xSpeed, float ySpeed) {
@@ -11,10 +12,20 @@ public class Velocity {
     vertical = ySpeed;
   }
 
+  /**
+   * Returns the scalar speed in the horizontal direction
+   *
+   * @return Floating point value of horizontal speed in px/ms
+   */
   public float getHorizontal() {
     return horizontal;
   }
 
+  /**
+   * Returns the scalar speed in the verical direction
+   *
+   * @return Floating point value of horizontal speed in px/ms
+   */
   public float getVertical() {
     return vertical;
   }

@@ -1,31 +1,39 @@
 package customsprites;
 
-import base.Collidable;
-import base.Driver;
-import base.Player;
-import base.PassengerSupport;
-import base.Sprite;
-import base.TimeSupport;
+import base.*;
 import core.App;
 import core.Level;
-import java.util.logging.Logger;
 import utilities.Position;
+
+import java.util.logging.Logger;
 
 public class PowerUp extends Sprite implements TimeSupport, PassengerSupport, Collidable {
 
-  /** Universal characteristics of the PowerUp */
-  private final float MOVE_RATE = 2;
-
-  private final float DEATH_TIME = 14;
+  /** The time in seconds between movements */
+  private static final float MOVE_INTERVAL = 2;
+  /** The time in seconds before the powerup expires */
+  private static final float EXPIRY_TIME = 14;
   /** Used for internal JVM logging */
   private final Logger log = Logger.getLogger(getClass().getSimpleName());
+  /** The driver that the PowerUp is riding on, can be null */
   private Driver driver = null;
+  /** Time tracker for death */
   private float deathTimer = 0;
-  private float cumulativeDelta = 0;
+  /** Time tracker for death */
+  private float moveTimer = 0;
+  /** Flag whether the Sprite should move right, if False then it moves left */
   private boolean moveRight = false;
 
-  public PowerUp(Level spawnLevel, String Name, String imageSrc, Position centerPos) {
-    super(spawnLevel, Name, imageSrc, centerPos);
+  /**
+   * Initialises a PowerUp Sprite that can modify characteristics of other Sprites
+   *
+   * @param spawnLevel The level to spawn the PowerUp Sprite on
+   * @param name The name of the PowerUp Sprite
+   * @param imgSrc The path to the image to represent the PowerUp Sprite
+   * @param centerPos The location at which to spawn the PowerUp Sprite
+   */
+  public PowerUp(Level spawnLevel, String name, String imgSrc, Position centerPos) {
+    super(spawnLevel, name, imgSrc, centerPos);
   }
 
   /**
@@ -67,14 +75,14 @@ public class PowerUp extends Sprite implements TimeSupport, PassengerSupport, Co
   @Override
   public void onTimeTick(int delta) {
     /* Increment timers */
-    cumulativeDelta += delta;
+    moveTimer += delta;
     deathTimer += delta;
-    if (deathTimer / 1000 > DEATH_TIME) {
+    if (deathTimer / 1000 > EXPIRY_TIME) {
       log.info("Deleted powerup. F F F F F");
       getLevel().getSpriteManager().removeSprite(this);
     }
     /* Checks if the Sprite must move */
-    if (cumulativeDelta / 1000 <= MOVE_RATE) {
+    if (moveTimer / 1000 <= MOVE_INTERVAL) {
       /* The Sprite does not need to move yet */
       return;
     }
@@ -91,7 +99,7 @@ public class PowerUp extends Sprite implements TimeSupport, PassengerSupport, Co
       }
     }
     /* Resets timer */
-    cumulativeDelta = 0;
+    moveTimer = 0;
   }
 
   /**

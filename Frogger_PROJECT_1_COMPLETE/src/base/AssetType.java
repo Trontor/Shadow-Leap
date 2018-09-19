@@ -4,9 +4,7 @@ package base;
 public enum AssetType {
   /** Represents a tile that cannot be moved onto */
   SOLID_TILE,
-  /**
-   * Represents a tile that does not incur a penalty and can be safely travelled onto by the player
-   */
+  /** Represents a tile that does not incur a penalty and can be safely moved onto */
   FRIENDLY_TILE,
   /** Represents a tile that the player incurs a penalty on interaction but stays static */
   PASSIVE_OBSTACLE,

@@ -4,24 +4,42 @@ import java.util.List;
 
 /** Represents a location in the rectangular coordinates, specified in floating point precision. */
 public class Position {
-  /* immutable */
+  private static final float ORIGIN = 0;
+  /** The x (horizontal) coordinate */
   private final float x;
+  /** The y (vertical) coordinate */
   private final float y;
 
+  /** Initialises an instance of the Position class */
   public Position() {
-    /* defaults are 0 */
-    x = y = 0;
+    x = y = ORIGIN;
   }
 
+  /**
+   * Initialises an instance of the Position class with specified coordinates
+   *
+   * @param x The x coordinate to initialise the Position with
+   * @param y The y coordinate to initialise the Position with
+   */
   public Position(float x, float y) {
     this.x = x;
     this.y = y;
   }
 
+  /**
+   * Gets the x coordinate
+   *
+   * @return Floating point value of the x coordinate
+   */
   public float getX() {
     return x;
   }
 
+  /**
+   * Gets the y coordinate
+   *
+   * @return Floating point value of the y coordinate
+   */
   public float getY() {
     return y;
   }
