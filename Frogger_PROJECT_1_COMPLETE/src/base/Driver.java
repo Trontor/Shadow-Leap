@@ -2,10 +2,11 @@ package base;
 
 import core.App;
 import core.Level;
+import utilities.Position;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import utilities.Position;
 
 /**
  * A Sprite that can move itself and other sprites that are 'riding' the sprite at a specified
