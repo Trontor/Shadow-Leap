@@ -16,7 +16,7 @@ public class MagicianSprite extends Driver {
   /** Flag indicating whether the MagicianSprite should be visible or not */
   private boolean visible = true;
   /** Tracks the time since the last visibility action was performed */
-  private float currentTime = 0;
+  private float currentTimeElapsed = 0;
 
   /**
    * Initialises a Magician Sprite that represents a Sprite that can change visibility
@@ -38,15 +38,15 @@ public class MagicianSprite extends Driver {
    */
   @Override
   public void onTimeTick(int delta) {
-    currentTime += (float) delta / 1000;
-    if (visible && currentTime >= VISIBLE_TIME) {
-      currentTime = 0;
+    currentTimeElapsed += (float) delta / 1000;
+    if (visible && currentTimeElapsed >= VISIBLE_TIME) {
+      currentTimeElapsed = 0;
       visible = false;
       setRideable(false);
-    } else if (!visible && currentTime >= HIDDEN_TIME) {
+    } else if (!visible && currentTimeElapsed >= HIDDEN_TIME) {
       visible = true;
       setRideable(true);
-      currentTime = 0;
+      currentTimeElapsed = 0;
     }
     super.onTimeTick(delta);
   }

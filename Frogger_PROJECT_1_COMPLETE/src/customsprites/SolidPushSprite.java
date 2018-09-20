@@ -5,9 +5,8 @@ import base.PassengerSupport;
 import base.Sprite;
 import base.Velocity;
 import core.Level;
-import utilities.Position;
-
 import java.util.List;
+import utilities.Position;
 
 /**
  * Represents a Sprite that pushes any other Sprite it makes contact with in its direction of

@@ -62,7 +62,7 @@ public class Driver extends MovingSprite {
    */
   private void updateSnapPositions() {
     playerSnapPositions.clear();
-    float firstSnap = getLeftAnchor().getX() + App.getTileLength() / 2f;
+    float firstSnap = getBottomLeftAnchor().getX() + App.getTileLength() / 2f;
     int j = 0;
     int numSnaps = Math.round(getWidth() / App.getTileLength());
     for (float i = firstSnap; j < numSnaps; i += App.getTileLength(), j++) {

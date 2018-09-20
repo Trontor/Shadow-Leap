@@ -67,6 +67,15 @@ public class Sprite {
   /**
    * Sets the image used for rendering this Sprite
    *
+   * @param image Image to set
+   */
+  public void setImage(Image image) {
+    this.image = image;
+  }
+
+  /**
+   * Sets the image used for rendering this Sprite
+   *
    * @param imageSource Path to the image to set
    */
   private void setImage(String imageSource) {
@@ -77,15 +86,6 @@ public class Sprite {
     }
     height = image.getHeight();
     width = image.getWidth();
-  }
-
-  /**
-   * Sets the image used for rendering this Sprite
-   *
-   * @param image Image to set
-   */
-  public void setImage(Image image) {
-    this.image = image;
   }
 
   /**
@@ -124,7 +124,7 @@ public class Sprite {
     centerPosition = centerLoc;
     hitBox.setX(centerLoc.getX());
     hitBox.setY(centerLoc.getY());
-    outOfBounds();
+    isOutOfBounds();
   }
 
   /**
@@ -132,7 +132,7 @@ public class Sprite {
    *
    * @return new Position class with pre-set (x,y) anchor location
    */
-  public Position getLeftAnchor() {
+  public Position getBottomLeftAnchor() {
     float anchorX = centerPosition.getX() - width / 2;
     float anchorY = centerPosition.getY() - height / 2;
     return new Position(anchorX, anchorY);
@@ -174,7 +174,7 @@ public class Sprite {
    *
    * @return True if out of bounds, False if inside bounds
    */
-  public boolean outOfBounds() {
+  public boolean isOutOfBounds() {
     boolean tooHigh = hitBox.getBottom() > App.getScreenHeight();
     boolean tooLow = hitBox.getTop() < 0;
     boolean tooFarLeft = hitBox.getRight() < 0;
@@ -188,7 +188,7 @@ public class Sprite {
    * @param g The Graphics object to render the base.Sprite on
    */
   public void render(Graphics g) {
-    g.drawImage(image, getLeftAnchor().getX(), getLeftAnchor().getY());
+    g.drawImage(image, getBottomLeftAnchor().getX(), getBottomLeftAnchor().getY());
   }
 
   /**

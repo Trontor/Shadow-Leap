@@ -128,7 +128,7 @@ public class MovingSprite extends Sprite implements TimeSupport {
     if (movementVelocity.getMagnitude() == 0) {
       return;
     }
-    if (outOfBounds()) {
+    if (isOutOfBounds()) {
       respawn();
       return;
     }

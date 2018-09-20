@@ -163,7 +163,7 @@ public class Player extends Sprite
   @Override
   public void setLocation(Position center) {
     super.setLocation(center);
-    if (super.outOfBounds()) {
+    if (super.isOutOfBounds()) {
       onScreenBoundsExtended();
     }
   }
