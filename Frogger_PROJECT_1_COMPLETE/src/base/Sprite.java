@@ -26,7 +26,6 @@ public class Sprite {
   private Image image;
   /** The dimensions of the sprite */
   private float height, width;
-
   /**
    * Initialises a new Sprite object
    *
@@ -53,6 +52,10 @@ public class Sprite {
    */
   public BoundingBox getHitBox() {
     return hitBox;
+  }
+
+  public void setHitBox(BoundingBox hitBox) {
+    this.hitBox = hitBox;
   }
 
   /**
@@ -122,9 +125,11 @@ public class Sprite {
    */
   public void setLocation(Position centerLoc) {
     centerPosition = centerLoc;
-    hitBox.setX(centerLoc.getX());
-    hitBox.setY(centerLoc.getY());
-    isOutOfBounds();
+    if (hitBox != null) {
+      hitBox.setX(centerLoc.getX());
+      hitBox.setY(centerLoc.getY());
+    }
+    checkOutOfBounds();
   }
 
   /**
@@ -174,11 +179,12 @@ public class Sprite {
    *
    * @return True if out of bounds, False if inside bounds
    */
-  public boolean isOutOfBounds() {
-    boolean tooHigh = hitBox.getBottom() > App.getScreenHeight();
-    boolean tooLow = hitBox.getTop() < 0;
-    boolean tooFarLeft = hitBox.getRight() < 0;
-    boolean tooFarRight = hitBox.getLeft() > App.getScreenWidth();
+  public boolean checkOutOfBounds() {
+    BoundingBox tempBox = hitBox == null ? new BoundingBox(image, centerPosition) : hitBox;
+    boolean tooHigh = tempBox.getBottom() > App.getScreenHeight();
+    boolean tooLow = tempBox.getTop() < 0;
+    boolean tooFarLeft = tempBox.getRight() < 0;
+    boolean tooFarRight = tempBox.getLeft() > App.getScreenWidth();
     return tooHigh || tooLow || tooFarLeft || tooFarRight;
   }
 

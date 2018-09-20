@@ -4,6 +4,7 @@ import org.newdawn.slick.Image;
 
 public class BoundingBox {
   private static final float FUZZ = 0.95f;
+  private boolean disableFuzz = false;
 
   private float left;
   private float top;
@@ -11,6 +12,14 @@ public class BoundingBox {
   private float height;
 
   public BoundingBox(Image img, Position centerPos) {
+    setWidth(img.getWidth());
+    setHeight(img.getHeight());
+    setX(centerPos.getX());
+    setY(centerPos.getY());
+  }
+
+  public BoundingBox(Image img, Position centerPos, boolean disableFuzz) {
+    this.disableFuzz = disableFuzz;
     setWidth(img.getWidth());
     setHeight(img.getHeight());
     setX(centerPos.getX());
@@ -26,11 +35,11 @@ public class BoundingBox {
   }
 
   private void setWidth(float w) {
-    width = w * FUZZ;
+    width = disableFuzz ? w : w * FUZZ;
   }
 
   private void setHeight(float h) {
-    height = h * FUZZ;
+    height = disableFuzz ? h : h * FUZZ;
   }
 
   public float getLeft() {

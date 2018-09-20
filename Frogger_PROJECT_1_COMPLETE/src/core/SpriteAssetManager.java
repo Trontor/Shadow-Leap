@@ -4,25 +4,21 @@ import base.*;
 import customsprites.BikeSprite;
 import customsprites.MagicianSprite;
 import customsprites.SolidPushSprite;
+import utilities.Position;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import utilities.Position;
 
 /**
  * Helper class that reads, parses, and categorieses assets for a given level. All generated Sprites
  * are stored in a list referred to as the 'Sprite Map'
  */
 public class SpriteAssetManager {
-
   /** The folder name that contains all the levels and images */
   private static final String ASSET_ROOT = "assets";
   /** The folder name that is a child of the asset root and contains all level data files */
@@ -133,8 +129,8 @@ public class SpriteAssetManager {
   public List<Sprite> getSpritesAt(Position pos) {
     List<Sprite> returnList = new ArrayList<>();
     for (Sprite s : spriteMap) {
-      if (s.getHitBox().intersects(pos)) {
-          returnList.add(s);
+      if (s.getHitBox() != null && s.getHitBox().intersects(pos)) {
+        returnList.add(s);
       }
     }
     return returnList;
@@ -147,7 +143,15 @@ public class SpriteAssetManager {
    * @return A list of Sprites
    */
   public List<Sprite> getIntersectingSprites(Sprite sprite) {
-    return filterSprites(s -> s != sprite && s.getHitBox().intersects(sprite.getHitBox()));
+    if (sprite.getHitBox() == null) {
+      return Collections.emptyList();
+    }
+    return filterSprites(
+        s ->
+            s != sprite
+                && sprite.getHitBox() != null
+                && s.getHitBox() != null
+                && s.getHitBox().intersects(sprite.getHitBox()));
   }
 
   /**
