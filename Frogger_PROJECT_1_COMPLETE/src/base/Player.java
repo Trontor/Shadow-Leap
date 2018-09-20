@@ -119,7 +119,7 @@ public class Player extends Sprite
         break;
     }
     Position newPos = new Position(newX, newY);
-    for (Sprite s : super.getLevel().getSpriteManager().getSpritesAt(newPos)) {
+    for (Sprite s : getLevel().getSpriteManager().getSpritesAt(newPos)) {
       if (getLevel().getSpriteManager().getAssetType(s.getSpriteName()) == AssetType.SOLID_TILE) {
         log.info(
             String.format("Intersection with %s which is a solid, can't move.", s.getSpriteName()));

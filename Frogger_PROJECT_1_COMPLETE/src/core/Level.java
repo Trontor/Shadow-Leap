@@ -159,6 +159,10 @@ public class Level {
    */
   private void spawnExtraLife() {
     List<Sprite> logs = getSpriteManager().filterSprites(s -> s.getSpriteName().contains("log"));
+    if (logs.size() == 0 ){
+      log.info("No logs to spawn extra life on");
+      return;
+    }
     Sprite randomLog = logs.get(getRandomNumber(0, logs.size() - 1));
     PowerUp extraLife =
         new PowerUp(this, "extralife", "assets/extralife.png", randomLog.getLocation());

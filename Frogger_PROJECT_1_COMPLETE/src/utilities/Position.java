@@ -67,14 +67,10 @@ public class Position {
       return null;
     }
     Position closest = list.get(0);
-    System.out.print("|| Curr = " + this + " || Size= " + list.size() + " || ");
-    System.out.print(" || " + closest + " || ");
     for (int i = 1; i < list.size(); i++) {
       Position curr = list.get(i);
-      System.out.print(" || " + curr + " || ");
       if (distanceTo(curr) < distanceTo(closest)) closest = curr;
     }
-    System.out.println("Closest = " + closest);
     return closest;
   }
 

@@ -130,7 +130,7 @@ public class SpriteAssetManager {
   public List<Sprite> getSpritesAt(Position pos) {
     List<Sprite> returnList = new ArrayList<>();
     for (Sprite s : spriteMap) {
-      if (s.getHitBox() != null && s.getHitBox().intersects(pos)) {
+      if (s.getHitBox() != null && s.getHitBox().intersects(pos, App.getTileLength(), App.getTileLength())) {
         returnList.add(s);
       }
     }

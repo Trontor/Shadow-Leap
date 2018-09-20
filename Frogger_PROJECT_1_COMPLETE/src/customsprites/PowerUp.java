@@ -110,7 +110,7 @@ public class PowerUp extends Sprite implements TimeSupport, PassengerSupport, Co
   private boolean tryShuffleRight() {
     float newX = getLocation().getX() + App.getTileLength();
     Position position = new Position(newX, driver.getLocation().getY());
-    boolean canMove = driver.getHitBox().intersects(position);
+    boolean canMove = driver.getHitBox().intersects(position, App.getTileLength(), App.getTileLength());
     if (canMove) {
       this.setLocation(position);
       return true;
@@ -126,7 +126,7 @@ public class PowerUp extends Sprite implements TimeSupport, PassengerSupport, Co
   private boolean tryShuffleLeft() {
     float newX = getLocation().getX() - App.getTileLength();
     Position position = new Position(newX, driver.getLocation().getY());
-    boolean canMove = driver.getHitBox().intersects(position);
+    boolean canMove = driver.getHitBox().intersects(position, App.getTileLength(), App.getTileLength());
     if (canMove) {
       this.setLocation(position);
       return true;
