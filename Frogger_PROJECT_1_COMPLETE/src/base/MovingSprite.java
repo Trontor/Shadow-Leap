@@ -3,6 +3,7 @@ package base;
 import core.App;
 import core.Level;
 import utilities.Position;
+import utilities.Velocity;
 
 /**
  * A Sprite that can move at a specified velocity and wrap around the screen

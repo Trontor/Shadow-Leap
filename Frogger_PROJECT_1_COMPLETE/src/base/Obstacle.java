@@ -2,6 +2,7 @@ package base;
 
 import core.Level;
 import utilities.Position;
+import utilities.Velocity;
 
 /**
  * Class that represents all collidable obstacles in the game

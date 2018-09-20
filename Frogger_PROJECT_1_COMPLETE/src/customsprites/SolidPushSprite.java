@@ -3,7 +3,7 @@ package customsprites;
 import base.MovingSprite;
 import base.PassengerSupport;
 import base.Sprite;
-import base.Velocity;
+import utilities.Velocity;
 import core.Level;
 import utilities.BoundingBox;
 import utilities.Position;

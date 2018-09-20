@@ -1,7 +1,7 @@
 package customsprites;
 
 import base.Driver;
-import base.Velocity;
+import utilities.Velocity;
 import core.Level;
 import org.newdawn.slick.Graphics;
 import utilities.Position;

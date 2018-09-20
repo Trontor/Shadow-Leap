@@ -1,4 +1,4 @@
-package base;
+package utilities;
 
 /** Represents values for speed in the x and y directions, in units: ms/px */
 public class Velocity {

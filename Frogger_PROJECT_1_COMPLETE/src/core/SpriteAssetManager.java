@@ -13,6 +13,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import utilities.Velocity;
 
 /**
  * Helper class that reads, parses, and categorieses assets for a given level. All generated Sprites

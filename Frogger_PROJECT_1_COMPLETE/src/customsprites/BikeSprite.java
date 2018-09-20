@@ -1,7 +1,7 @@
 package customsprites;
 
 import base.Obstacle;
-import base.Velocity;
+import utilities.Velocity;
 import core.Level;
 import utilities.Position;
 
