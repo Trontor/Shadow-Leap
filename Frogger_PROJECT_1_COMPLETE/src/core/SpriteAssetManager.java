@@ -5,6 +5,7 @@ import customsprites.BikeSprite;
 import customsprites.MagicianSprite;
 import customsprites.SolidPushSprite;
 import utilities.Position;
+import utilities.Velocity;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,7 +14,6 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import utilities.Velocity;
 
 /**
  * Helper class that reads, parses, and categorieses assets for a given level. All generated Sprites
@@ -130,7 +130,8 @@ public class SpriteAssetManager {
   public List<Sprite> getSpritesAt(Position pos) {
     List<Sprite> returnList = new ArrayList<>();
     for (Sprite s : spriteMap) {
-      if (s.getHitBox() != null && s.getHitBox().intersects(pos, App.getTileLength(), App.getTileLength())) {
+      if (s.getHitBox() != null
+          && s.getHitBox().intersects(pos, App.getTileLength(), App.getTileLength())) {
         returnList.add(s);
       }
     }
