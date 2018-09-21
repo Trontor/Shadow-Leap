@@ -1,10 +1,10 @@
 package customsprites;
 
 import base.Driver;
-import utilities.Velocity;
 import core.Level;
 import org.newdawn.slick.Graphics;
 import utilities.Position;
+import utilities.Velocity;
 
 /** Represents a Sprite that can disappear and reappear */
 public class MagicianSprite extends Driver {

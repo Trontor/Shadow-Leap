@@ -50,10 +50,20 @@ public class Level {
     updateExtraLifeSpawnTime();
   }
 
+  /**
+   * Gets the Y coordinate of the winning row (where the holes are)
+   *
+   * @return Integer value of y coordinate
+   */
   public static int getWinningY() {
     return WINNING_Y;
   }
 
+  /**
+   * Gets the Sprite Manager managing this level
+   *
+   * @return The Sprite Manager instance used to manage this level
+   */
   public SpriteAssetManager getSpriteManager() {
     return spriteManager;
   }
@@ -159,7 +169,7 @@ public class Level {
    */
   private void spawnExtraLife() {
     List<Sprite> logs = getSpriteManager().filterSprites(s -> s.getSpriteName().contains("log"));
-    if (logs.size() == 0 ){
+    if (logs.size() == 0) {
       log.info("No logs to spawn extra life on");
       return;
     }

@@ -4,6 +4,7 @@ import java.util.List;
 
 /** Represents a location in the rectangular coordinates, specified in floating point precision. */
 public class Position {
+  /** Gets the origin used for this position class */
   private static final float ORIGIN = 0;
   /** The x (horizontal) coordinate */
   private final float x;

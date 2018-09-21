@@ -1,7 +1,6 @@
 package utilities;
 
 import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
 
 public class BoundingBox {
   private static final float FUZZ = 0.95f;
@@ -11,13 +10,12 @@ public class BoundingBox {
   private float top;
   private float width;
   private float height;
-  private Position thisPos;
+
   public BoundingBox(Image img, Position centerPos) {
     setWidth(img.getWidth());
     setHeight(img.getHeight());
     setX(centerPos.getX());
     setY(centerPos.getY());
-    thisPos = centerPos;
   }
 
   public BoundingBox(Image img, Position centerPos, boolean disableFuzz) {
@@ -68,12 +66,10 @@ public class BoundingBox {
   }
 
   public boolean intersects(Position other, float height, float width) {
-    try {
-      return intersects(new BoundingBox(new Image((int)width, (int)height), other));
-    } catch (SlickException e) {
-      e.printStackTrace();
-    }
-    return false;
+    return !(other.getX() - width / 2 > getRight()
+        || other.getX() + width / 2 < left
+        || other.getY() + height / 2 < getBottom()
+        || other.getY() - height / 2 > top);
   }
 
   @Override
