@@ -25,6 +25,10 @@ public class Level {
   private static final int WINNING_X_SEPARATION = 192;
   /** A description of the placeholder markers indicating level progress */
   private static final String PROGRESS_MARKER = "filledhole";
+  /** File path to the image used for the extralife object */
+  public static final String EXTRA_LIFE_IMG = "assets/extralife.png";
+  /** The name used internally to represent the extra life sprite */
+  public static final String EXTRALIFE_NAME = "extralife";
   /** Manages the Sprites and associated functions for this level */
   private final SpriteAssetManager spriteManager;
   /** The number of the current level */
@@ -175,7 +179,7 @@ public class Level {
     }
     Sprite randomLog = logs.get(getRandomNumber(0, logs.size() - 1));
     PowerUp extraLife =
-        new PowerUp(this, "extralife", "assets/extralife.png", randomLog.getLocation());
+        new PowerUp(this, EXTRALIFE_NAME, EXTRA_LIFE_IMG, randomLog.getLocation());
     extraLife.attachDriver((Driver) randomLog);
     log.info("Spawned extra life on log at " + extraLife.getLocation());
     getSpriteManager().addSprite(extraLife);

@@ -25,6 +25,7 @@ public class App extends BasicGame {
   private static final int NUMBER_OF_WORLDS = 2;
   /** Represents the level to run at the start of the game */
   private static final int SPAWN_WORLD_NUM = 0;
+  public static final String GAME_TITLE = "Shadow Leap";
   /** Flag that indicates whether the game should continue running */
   private static boolean keepRunning = true;
   /** Represents the world to be currently rendered */
@@ -32,7 +33,7 @@ public class App extends BasicGame {
 
   /** Initializes the core.App class */
   public App() {
-    super("Shadow Leap");
+    super(GAME_TITLE);
   }
 
   /**

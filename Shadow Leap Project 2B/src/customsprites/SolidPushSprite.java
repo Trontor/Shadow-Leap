@@ -16,9 +16,18 @@ import java.util.List;
  */
 public class SolidPushSprite extends MovingSprite {
 
+  /**
+   * Initialises a new Moving Sprite object
+   *
+   * @param spawnLevel The level to spawn the sprite on
+   * @param name The name of the Sprite
+   * @param imageSrc The path to the image to represent the sprite
+   * @param centerPos The location to spawn the Sprite at
+   * @param velocity The movement velocity to move the Sprite at
+   */
   public SolidPushSprite(
-      Level spawnLevel, String Name, String imageSrc, Position centerPos, Velocity velocity) {
-    super(spawnLevel, Name, imageSrc, centerPos, velocity);
+      Level spawnLevel, String name, String imageSrc, Position centerPos, Velocity velocity) {
+    super(spawnLevel, name, imageSrc, centerPos, velocity);
     super.setHitBox(new BoundingBox(getImage(), getLocation(), true));
   }
 

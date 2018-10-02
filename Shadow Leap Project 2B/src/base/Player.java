@@ -177,7 +177,7 @@ public class Player extends Sprite
   public void onTimeTick(int delta) {
     checkForDrivers();
     checkCollision();
-    if (getLocation().getY() <= getLevel().getWinningY()) {
+    if (getLocation().getY() <= Level.getWinningY()) {
       getLevel().changeWorldState(LevelState.PartlyFinished);
     }
   }

@@ -28,6 +28,17 @@ public class SpriteAssetManager {
   private static final String PLAYER_ASSET_NAME = "frog";
   /** The extension of the image files used for all assets */
   private static final String ASSET_IMAGE_EXTENSION = ".png";
+  /* Sprite name constants */
+  public static final String TURTLES = "turtles";
+  public static final String BIKE = "bike";
+  public static final String BULLDOZER = "bulldozer";
+  public static final String WATER = "water";
+  public static final String GRASS = "grass";
+  public static final String TREE = "tree";
+  public static final String BUS = "bus";
+  public static final String LOG = "log";
+  public static final String LONGLOG = "longlog";
+  public static final String RACECAR = "racecar";
   /** The starting position for the player */
   private final Position PLAYER_START_POS = new Position(512, 720);
 
@@ -62,26 +73,26 @@ public class SpriteAssetManager {
     this.level = level;
     spriteMap = new ArrayList<>();
     /* keeps all assets with specialised behaviour separately */
-    specialSprites.add("turtles");
-    specialSprites.add("bike");
-    specialSprites.add("bulldozer");
+    specialSprites.add(TURTLES);
+    specialSprites.add(BIKE);
+    specialSprites.add(BULLDOZER);
     /* labels all the assets in the game with basic behaviour */
-    assetTypes.put("water", AssetType.PASSIVE_OBSTACLE);
-    assetTypes.put("grass", AssetType.FRIENDLY_TILE);
-    assetTypes.put("tree", AssetType.SOLID_TILE);
-    assetTypes.put("bus", AssetType.MOVING_OBSTACLE);
-    assetTypes.put("bulldozer", AssetType.SOLID_TILE);
-    assetTypes.put("log", AssetType.DRIVER_OBJECT);
-    assetTypes.put("longlog", AssetType.DRIVER_OBJECT);
-    assetTypes.put("racecar", AssetType.MOVING_OBSTACLE);
+    assetTypes.put(WATER, AssetType.PASSIVE_OBSTACLE);
+    assetTypes.put(GRASS, AssetType.FRIENDLY_TILE);
+    assetTypes.put(TREE, AssetType.SOLID_TILE);
+    assetTypes.put(BUS, AssetType.MOVING_OBSTACLE);
+    assetTypes.put(BULLDOZER, AssetType.SOLID_TILE);
+    assetTypes.put(LOG, AssetType.DRIVER_OBJECT);
+    assetTypes.put(LONGLOG, AssetType.DRIVER_OBJECT);
+    assetTypes.put(RACECAR, AssetType.MOVING_OBSTACLE);
     /* labels all moving objects with their movement velocities */
-    speedInfo.put("bus", new Velocity(0.15f, 0));
-    speedInfo.put("bike", new Velocity(0.2f, 0));
-    speedInfo.put("bulldozer", new Velocity(0.05f, 0));
-    speedInfo.put("log", new Velocity(0.1f, 0));
-    speedInfo.put("longlog", new Velocity(0.07f, 0));
-    speedInfo.put("racecar", new Velocity(0.5f, 0));
-    speedInfo.put("turtles", new Velocity(0.085f, 0));
+    speedInfo.put(BUS, new Velocity(0.15f, 0));
+    speedInfo.put(BIKE, new Velocity(0.2f, 0));
+    speedInfo.put(BULLDOZER, new Velocity(0.05f, 0));
+    speedInfo.put(LOG, new Velocity(0.1f, 0));
+    speedInfo.put(LONGLOG, new Velocity(0.07f, 0));
+    speedInfo.put(RACECAR, new Velocity(0.5f, 0));
+    speedInfo.put(TURTLES, new Velocity(0.085f, 0));
   }
 
   /**
@@ -234,7 +245,7 @@ public class SpriteAssetManager {
       String[] assetInfo = line.split(",");
       String assetName = assetInfo[0].toLowerCase();
       if (assetName.equals("turtle")) {
-        assetName = "turtles";
+        assetName = TURTLES;
       }
       AssetType assetType = null;
       if (assetTypes.containsKey(assetName)) {
@@ -261,13 +272,13 @@ public class SpriteAssetManager {
       Sprite newSprite = null;
       if (specialSprites.contains(assetName)) {
         switch (assetName) {
-          case "turtles":
+          case TURTLES:
             newSprite = new MagicianSprite(level, assetName, imageSrc, spawnPos, newVelocity);
             break;
-          case "bike":
+          case BIKE:
             newSprite = new BikeSprite(level, assetName, imageSrc, spawnPos, newVelocity);
             break;
-          case "bulldozer":
+          case BULLDOZER:
             newSprite = new SolidPushSprite(level, assetName, imageSrc, spawnPos, newVelocity);
             break;
         }
