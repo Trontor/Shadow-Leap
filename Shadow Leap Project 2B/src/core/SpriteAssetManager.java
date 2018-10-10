@@ -29,16 +29,16 @@ public class SpriteAssetManager {
   /** The extension of the image files used for all assets */
   private static final String ASSET_IMAGE_EXTENSION = ".png";
   /* Sprite name constants */
-  public static final String TURTLES = "turtles";
-  public static final String BIKE = "bike";
-  public static final String BULLDOZER = "bulldozer";
-  public static final String WATER = "water";
-  public static final String GRASS = "grass";
-  public static final String TREE = "tree";
-  public static final String BUS = "bus";
-  public static final String LOG = "log";
-  public static final String LONGLOG = "longlog";
-  public static final String RACECAR = "racecar";
+  private static final String TURTLES = "turtles";
+  private static final String BIKE = "bike";
+  private static final String BULLDOZER = "bulldozer";
+  private static final String WATER = "water";
+  private static final String GRASS = "grass";
+  private static final String TREE = "tree";
+  private static final String BUS = "bus";
+  private static final String LOG = "log";
+  private static final String LONGLOG = "longlog";
+  private static final String RACECAR = "racecar";
   /** The starting position for the player */
   private final Position PLAYER_START_POS = new Position(512, 720);
 

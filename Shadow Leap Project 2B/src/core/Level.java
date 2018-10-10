@@ -1,18 +1,25 @@
 package core;
 
-import base.*;
+import base.Driver;
+import base.KeySupport;
+import base.LevelState;
+import base.Sprite;
+import base.TimeSupport;
 import customsprites.PowerUp;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
-import utilities.Position;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Input;
+import utilities.Position;
 
 /** A wrapper class that encapsulates all the sprites and events for a specified level. */
 public class Level {
+  /** File path to the image used for the extralife object */
+  public static final String EXTRA_LIFE_IMG = "assets/extralife.png";
+  /** The name used internally to represent the extra life sprite */
+  public static final String EXTRALIFE_NAME = "extralife";
   /** The Y coordinate for the winning rpw */
   private static final int WINNING_Y = 48;
   /** Bottom limit to random spawn time for the extra life object */
@@ -25,10 +32,6 @@ public class Level {
   private static final int WINNING_X_SEPARATION = 192;
   /** A description of the placeholder markers indicating level progress */
   private static final String PROGRESS_MARKER = "filledhole";
-  /** File path to the image used for the extralife object */
-  public static final String EXTRA_LIFE_IMG = "assets/extralife.png";
-  /** The name used internally to represent the extra life sprite */
-  public static final String EXTRALIFE_NAME = "extralife";
   /** Manages the Sprites and associated functions for this level */
   private final SpriteAssetManager spriteManager;
   /** The number of the current level */
@@ -178,8 +181,7 @@ public class Level {
       return;
     }
     Sprite randomLog = logs.get(getRandomNumber(0, logs.size() - 1));
-    PowerUp extraLife =
-        new PowerUp(this, EXTRALIFE_NAME, EXTRA_LIFE_IMG, randomLog.getLocation());
+    PowerUp extraLife = new PowerUp(this, EXTRALIFE_NAME, EXTRA_LIFE_IMG, randomLog.getLocation());
     extraLife.attachDriver((Driver) randomLog);
     log.info("Spawned extra life on log at " + extraLife.getLocation());
     getSpriteManager().addSprite(extraLife);
